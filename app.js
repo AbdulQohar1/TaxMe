@@ -1,3 +1,5 @@
+require('dotenv').config();
+require('express-async-errors');
 const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
@@ -6,10 +8,17 @@ const app = express();
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
 
+// routers
+const authRouter = require('./routes/auth');
+
 // routes
 app.use(express.json());
 app.use(bodyParser.json());
-// app.use('/')
+app.use('api/auth', authRouter);
+
+app.use(notFoundMiddleware);
+app.use(errorHandlerMiddleware);
+
 
 const port  = process.env.PORT || 3000;
 
