@@ -1,7 +1,7 @@
 const User = require('../models/user');
 const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, UnauthenticatedError } = require('../errors');
-const bcrypt = require('bcryptjs');
+// const bcrypt = require('bcryptjs');
 
 const register = async (req , res) => {
 	const user = await User.create({ ...req.body });
@@ -42,7 +42,40 @@ const login = async (req , res) => {
 	});
 }
 
+// get User profile handler
+const getUserProfile = async (req, res, next) => {
+  const { email, token } = req.headers;  // Changed from req.header to req.headers
+
+  try {
+    const user = await User.findOne({ usermail: email, usertoken: token });
+
+    if (!user) {
+      throw new UnauthenticatedError('Invalid Credentials');
+    }
+
+    req.user = user;
+    
+    // Send response or call next() to pass control to the next middleware
+    res.json({
+      user_details: {
+        user_id: user._id,
+        user_status: user.status,
+        user_role: user.role,
+        email: user.usermail
+      }
+    });
+  } catch (error) {
+    console.log('Error verifying:', error);
+    next(error);  // Pass error to Express error handler
+  }
+};
+
+
+
+
+
 module.exports = {
 	register, 
-	login
+	login,
+	getUserProfile,
 }

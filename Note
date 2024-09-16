@@ -1,0 +1,43 @@
+async function connectToDatabase() {
+  try {
+    await client.connect();
+    db = client.db("userdb"); // Replace "userdb" with your database name
+    console.log("Connected to MongoDB");
+  } catch (error) {
+    console.error("Could not connect to MongoDB", error);
+    process.exit(1);
+  }
+}
+
+// Middleware to verify user token
+async function verifyToken(req, res, next) {
+  const { useremail, usertoken } = req.headers;
+
+  try {
+    const user = await db.collection('users').findOne({ email: useremail, token: usertoken });
+
+    if (!user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error("Error verifying token:", error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+// GET /get-profile endpoint
+app.get('/get-profile', verifyToken, (req, res) => {
+  const { _id, status, role, email } = req.user;
+
+  res.json({
+    user_details: {
+      user_id: _id.toString(),
+      user_status: status,
+      user_role: role,
+      email: email
+    }
+  });
+});
