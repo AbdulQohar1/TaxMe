@@ -1,43 +1,160 @@
-async function connectToDatabase() {
-  try {
-    await client.connect();
-    db = client.db("userdb"); // Replace "userdb" with your database name
-    console.log("Connected to MongoDB");
-  } catch (error) {
-    console.error("Could not connect to MongoDB", error);
-    process.exit(1);
-  }
-}
+const jwt = require('jsonwebtoken'); // Ensure you have the jsonwebtoken package
 
-// Middleware to verify user token
-async function verifyToken(req, res, next) {
-  const { useremail, usertoken } = req.headers;
-
+router.get('/get-profile', async (req, res) => {
   try {
-    const user = await db.collection('users').findOne({ email: useremail, token: usertoken });
+    // Extract useremail and usertoken from headers
+    const { useremail, usertoken } = req.headers;
+
+    if (!useremail || !usertoken) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({ err: 'Email or token missing' });
+    }
+
+    // Verify the token using the secret
+    const decoded = jwt.verify(usertoken, process.env.JWT_SECRET);
+    
+    if (!decoded) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({ err: 'Invalid token' });
+    }
+
+    // Find the user in the database by email
+    const user = await User.findOne({ email: useremail });
 
     if (!user) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      return res.status(StatusCodes.NOT_FOUND).json({ err: 'User not found' });
     }
 
-    req.user = user;
-    next();
+    // Return the user profile
+    res.status(StatusCodes.OK).json({
+      user_details: {
+        user_id: user._id,
+        user_status: user.status || 'active', // Assuming user status is stored in `status`
+        user_role: user.role || 'user', // Assuming user role is stored in `role`
+        email: user.email
+      }
+    });
   } catch (error) {
-    console.error("Error verifying token:", error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error fetching user profile:", error);
+    
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(StatusCodes.UNAUTHORIZED).json({ err: 'Invalid token' });
+    }
+
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ err: error.message || "Something went wrong" });
   }
+});
+
+
+
+const express = require('express');
+const User = require('../models/user');
+const jwt = require('jsonwebtoken');
+const { StatusCodes } = require('http-status-codes');
+const { UnauthenticatedError } = require('../errors');
+
+const router = express.Router();
+
+router.get('/get-profile', async (req, res) => {
+  const userEmail = req.headers.useremail;
+  const userToken = req.headers.usertoken;
+
+  try {
+    // Verify if token is provided
+    if (!userToken) {
+      throw new UnauthenticatedError('Authentication token is missing');
+    }
+
+    // Verify and decode the JWT token
+    const decodedToken = jwt.verify(userToken, process.env.JWT_SECRET);
+    if (!decodedToken) {
+      throw new UnauthenticatedError('Invalid token');
+    }
+
+    // Find the user by email
+    const user = await User.findOne({ email: userEmail });
+
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        err: `User with email ${userEmail} not found`
+      });
+    }
+
+    // Respond with user profile
+    res.status(StatusCodes.OK).json({
+      user_details: {
+        user_id: user._id,
+        user_status: user.status, // Assuming 'status' field exists on the user model
+        user_role: user.role, // Assuming 'role' field exists on the user model
+        email: user.email
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+
+    if (error instanceof jwt.JsonWebTokenError) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({ err: 'Invalid or expired token' });
+    }
+
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      err: error.message || 'Something went wrong'
+    });
+  }
+});
+
+module.exports = router;
+
+
+status: {
+  type: String, // Add this field if not present
+  default: 'active'
+},
+role: {
+  type: String, // Add this field if not present
+  default: 'user'
 }
 
-// GET /get-profile endpoint
-app.get('/get-profile', verifyToken, (req, res) => {
-  const { _id, status, role, email } = req.user;
 
-  res.json({
-    user_details: {
-      user_id: _id.toString(),
-      user_status: status,
-      user_role: role,
-      email: email
-    }
-  });
-});
+
+
+// async function connectToDatabase() {
+//   try {
+//     await client.connect();
+//     db = client.db("userdb"); // Replace "userdb" with your database name
+//     console.log("Connected to MongoDB");
+//   } catch (error) {
+//     console.error("Could not connect to MongoDB", error);
+//     process.exit(1);
+//   }
+// }
+
+// // Middleware to verify user token
+// async function verifyToken(req, res, next) {
+//   const { useremail, usertoken } = req.headers;
+
+//   try {
+//     const user = await db.collection('users').findOne({ email: useremail, token: usertoken });
+
+//     if (!user) {
+//       return res.status(401).json({ error: 'Unauthorized' });
+//     }
+
+//     req.user = user;
+//     next();
+//   } catch (error) {
+//     console.error("Error verifying token:", error);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// }
+
+// // GET /get-profile endpoint
+// app.get('/get-profile', verifyToken, (req, res) => {
+//   const { _id, status, role, email } = req.user;
+
+//   res.json({
+//     user_details: {
+//       user_id: _id.toString(),
+//       user_status: status,
+//       user_role: role,
+//       email: email
+//     }
+//   });
+// });

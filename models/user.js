@@ -29,6 +29,14 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     require: [true, 'Please provide your phonenumber']
   },
+  status: {
+    type: String, 
+    default: 'active'
+  },
+  role: {
+    type: String, 
+    default: 'user'
+  }
 }, 
 {
   timestamps: true,
