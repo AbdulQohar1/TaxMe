@@ -36,7 +36,7 @@ const UserSchema = new mongoose.Schema({
 );
 
 // encrypting users details
-UserSchema.pre('save' , async function(next) {
+UserSchema.pre('save' , async function encryptedPassword (next) {
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 

@@ -64,15 +64,12 @@ const getUserProfile = async (req, res, next) => {
         email: user.usermail
       }
     });
+		next();
   } catch (error) {
     console.log('Error verifying:', error);
-    next(error);  // Pass error to Express error handler
+    (error);  // Pass error to Express error handler
   }
 };
-
-
-
-
 
 module.exports = {
 	register, 

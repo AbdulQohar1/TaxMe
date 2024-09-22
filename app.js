@@ -6,18 +6,20 @@ const app = express();
 
 //connect db
 const connectDB = require('./db/connectDB');
+// const authenticateUser = require('./middleware/authentication');
+
+// routers
+const authRouter = require('./routes/auth');
 
 // error handler
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
 
-// routers
-const authRouter = require('./routes/auth');
-
 // routes
 app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use('api/auth', authRouter);
+app.use('/api/auth', authRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
