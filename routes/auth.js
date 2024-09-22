@@ -55,43 +55,100 @@ router.post('/login' , async (req , res) => {
 
 // router.post('/getUserProfile' , getUserProfile)
 router.get('/get-profile' , async (req , res) => {
-	// extract useremail and usertoken from headers
-  const { email, token } = req.headers;  
+	try {
+    // Extract useremail and usertoken from headers
+    const { email, token } = req.headers;  
+    console.log('Headers received:', req.headers);
 
-	// verify if useremail and usertoken are provided
-	if (!email || token) {
-		return res.status(StatusCodes.UNAUTHORIZED).json({
-			err: 'User email or token is missing'
-		});
-	}
+    // Verify if useremail and usertoken are provided
+    if (!email || !token) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({
+        err: 'User email or token is missing'
+      });
+    }
 
-	// verify the token using the private key
-	const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    // Verify the token using the private key
+    let decodedToken;
+    try {
+      decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (error) {
+      console.error('Token verification failed:', error);
+      return res.status(StatusCodes.UNAUTHORIZED).json({ err: 'Invalid token!' });
+    }
 
-	if (!decodedToken) {
-		return res.status(StatusCodes.UNAUTHORIZED).json({err: 'Invalid token!'})
-	}
+    // If decodedToken is not found, return error
+    if (!decodedToken) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({ err: 'Invalid token!' });
+    }
 
-	if (!user) {
-		return res.status(StatusCodes.NOT_FOUND).json({ err: 'User not found' });
-	}
+    console.log('Decoded token:', decodedToken);
+
+    // Find user in the database by email
+    const user = await User.findOne({ email: email });
+
+    if (!user) {
+      console.error('User not found for email:', email);
+      return res.status(StatusCodes.NOT_FOUND).json({ err: 'User not found' });
+    }
+
+    // Return the user profile information
+    res.status(StatusCodes.OK).json({
+      user_details: {
+        user_id: user._id,
+        user_status: user.status || 'active', // Assuming user status is stored in `status`
+        user_role: user.role || 'user', // Assuming user role is stored in `role`
+        email: user.email
+      }
+    });
+  } catch (error) {
+    console.error('Error in /get-profile route:', error);
+
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(StatusCodes.UNAUTHORIZED).json({ err: 'Invalid token!' });
+    }
+
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ err: 'Something went wrong', details: error.message });
+  }
+}
 
 
-	// find user in the database by email
-	const user = await User.findOne({ usermail: email});
+	// // extract useremail and usertoken from headers
+  // const {email,token} = req.headers;  
+	// console.log('Headers received:', req.headers);
 
-	if (!user) {
-		return res.status(StatusCodes.NOT_FOUND).json({ err: 'User not found' });
-	}
+	// // verify if useremail and usertoken are provided
+	// if (!email || !token) {
+	// 	return res.status(StatusCodes.UNAUTHORIZED).json({
+	// 		err: 'User email or token is missing'
+	// 	});
+	// }
 
-	res.status(StatusCodes.OK).json({
-		user_details: {
-			user_id: user._id,
-			user_status: user.status || 'active', // Assuming user status is stored in `status`
-			user_role: user.role || 'user', // Assuming user role is stored in `role`
-			email: user.email
-		}
-	});
+	// // verify the token using the private key
+	// let decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+
+	// if (!decodedToken) {
+	// 	return res.status(StatusCodes.UNAUTHORIZED).json({err: 'Invalid token!'})
+	// }
+
+	// if (!user) {
+	// 	return res.status(StatusCodes.NOT_FOUND).json({ err: 'User not found' });
+	// }
+
+	// // find user in the database by email
+	// const user = await User.findOne({ email: email});
+
+	// if (!user) {
+	// 	return res.status(StatusCodes.NOT_FOUND).json({ err: 'User not found' });
+	// }
+
+	// res.status(StatusCodes.OK).json({
+	// 	user_details: {
+	// 		user_id: user._id,
+	// 		user_status: user.status || 'active', // Assuming user status is stored in `status`
+	// 		user_role: user.role || 'user', // Assuming user role is stored in `role`
+	// 		email: user.email
+	// 	}
+	// });
   // try {
   //   const user = await User.findOne({ usermail: email, usertoken: token });
 
@@ -115,5 +172,5 @@ router.get('/get-profile' , async (req , res) => {
   //   console.log('Error verifying:', error);
   //   (error);  // Pass error to Express error handler
   // }
-})
+)
 module.exports = router;
