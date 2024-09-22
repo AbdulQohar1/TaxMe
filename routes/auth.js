@@ -7,13 +7,27 @@ const router = express.Router();
 
 // router.post('/register' , register);
 router.post('/register', async (req , res) =>{
-    const user = await User.create({ ...req.body });
+    // const user = await User.create({ ...req.body });
 
-	const token = user.createToken();
-	res.status(StatusCodes.CREATED).json({ 
-		user: {email: user.email}, 
-		token
-	});
+	// const token = user.createToken();
+	// res.status(StatusCodes.CREATED).json({ 
+	// 	user: {email: user.email}, 
+	// 	token
+	// });
+	try {
+		const user = await User.create({ ...req.body });
+
+		// Assuming createToken is a method on the User model
+		const token = user.createToken();
+
+		res.status(StatusCodes.CREATED).json({
+			user: { email: user.email },
+			token
+		});
+	} catch (error) {
+		console.error("Error during registration:", error); // Log the full error for debugging
+		res.status(StatusCodes.BAD_REQUEST).json({ err: error.message || "Something went wrong" });
+	}
 })
 
 // router.post('/login' , login);

@@ -2,10 +2,11 @@ require('dotenv').config();
 require('express-async-errors');
 const bodyParser = require('body-parser');
 const express = require('express');
-const app = express();
+// const app = express();
 
 //connect db
 const connectDB = require('./db/connectDB');
+const app = express();
 // const authenticateUser = require('./middleware/authentication');
 
 // routers
@@ -15,11 +16,12 @@ const authRouter = require('./routes/auth');
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
 
+
 // routes
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use('/api/auth', authRouter);
+app.use('/auth', authRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
