@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const mailSender = require('../utilis/mailSender');
-const { required } = require('joi');
 
-const otpSchema = new mongoose.Schema({
+// creating otp schema
+const OtpSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
@@ -35,7 +35,7 @@ async function sendVerificationMail (email, otp) {
 	}
 }
 
-otpSchema.pre('save', async function (next) {
+OtpSchema.pre('save', async function (next) {
 	console.log("New docs saved to the database");
 	// Only send an email when a new user is created
 	if (this.isNew) {
@@ -44,4 +44,4 @@ otpSchema.pre('save', async function (next) {
 	next();
 })
 
-module.exports = mongoose.model("OTP" , otpSchema);
+module.exports = mongoose.model('OTP' , OtpSchema);

@@ -65,8 +65,8 @@ UserSchema.methods.createToken = function () {
 
 // comparing user's password and inputed password
 UserSchema.methods.comparePassword = async function (inputedPassword) {
-    const passwordMatch = await bcrypt.compare (inputedPassword , this.password);
-    return passwordMatch;
+  const passwordMatch = await bcrypt.compare (inputedPassword , this.password);
+  return passwordMatch;
 }
 
 module.exports = mongoose.model('User' , UserSchema);
