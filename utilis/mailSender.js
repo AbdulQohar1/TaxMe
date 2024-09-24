@@ -14,9 +14,17 @@ const mailSender = async (email, title, body) => {
 
 		// sending mail to user
 		let info = await transporter.sendMail({
-			from: 
-		})
-	} catch (error) {
+			from: '',
+			to: email,
+			subject: title,
+			html: body,
+		});
 
+		console.log("Email info:", info);
+		return info;
+	} catch (error) {
+		console.log(error.message);	
 	}
 }
+
+module.exports = mailSender;
