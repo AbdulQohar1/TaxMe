@@ -6,10 +6,10 @@ exports.sendOTP = async (req, res) => {
 	try {
 		const { email } = req.body;
 
-		// confirm if user is already existing4
-		const checkUserPresent  = await User.findOne({ email });
+		// confirm if user is already existing
+		const checkUserExist  = await User.findOne({ email });
 		// if user with the provided email already exist
-		if (checkUserPresent) {
+		if (checkUserExist) {
 			return res.status(401).json({
 				success: false,
 				message: 'User is already registered!',
@@ -32,7 +32,7 @@ exports.sendOTP = async (req, res) => {
 		}
 
 		const otpPayload = { email, otp};
-		const otpBody = await OTP.create( otpPayload);
+		let otpBody = await OTP.create( otpPayload);
 
 		res.status(200).json({
 			success: true,

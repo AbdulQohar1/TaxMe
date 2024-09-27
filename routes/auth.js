@@ -1,54 +1,56 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const mailSender = require('../models/user');
+const  authController = require('../controllers/auth');
 const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, UnauthenticatedError } = require('../errors');
 
 const router = express.Router();
 
+
+router.post('/register' , authController.register);
 // register user route
-router.post('/register', async (req , res) => {
-  try {
-    const { email, fullname, password, number} = req.body;
+// router.post('/register', async (req , res) => {
+//   try {
+//     const { email, fullname, password, number} = req.body;
     
-    // check if user already exists
-    const existingUser = await User.findOne({ email });
+//     // check if user already exists
+//     const existingUser = await User.findOne({ email });
 
-    if (existingUser) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        error_msg: 'User already exists',
-        success: false,
-      });
-    }
+//     if (existingUser) {
+//       return res.status(StatusCodes.BAD_REQUEST).json({
+//         error_msg: 'User already exists',
+//         success: false,
+//       });
+//     }
 
-    // create a new user 
-    const user = await User.create({ email, fullname, password, number });
+//     // create a new user 
+//     const user = await User.create({ email, fullname, password, number });
 
-    // generate OTP
-  } catch (error) {
+//     // generate OTP
+//   } catch (error) {
 
-  }
-})
+//   }
+// })
 
 
-/*router.post('/register', async (req , res) =>{
-	try {
-		const user = await User.create({ ...req.body });
+// router.post('/register', async (req , res) =>{
+// 	try {
+// 		const user = await User.create({ ...req.body });
 
-		const token = user.createToken();
+// 		const token = user.createToken();
 
-		res.status(StatusCodes.CREATED).json({
-			user: { email: user.email },
-			token
-		});
-		} catch (error) {
-			console.error("Error during registration:", error);
+// 		res.status(StatusCodes.CREATED).json({
+// 			user: { email: user.email },
+// 			token
+// 		});
+// 		} catch (error) {
+// 			console.error("Error during registration:", error);
 			
-			res.status(StatusCodes.BAD_REQUEST).json({ err: error.message || "Something went wrong" });
-		};
-})
-*/
+// 			res.status(StatusCodes.BAD_REQUEST).json({ err: error.message || "Something went wrong" });
+// 		};
+// })
+
 
 // user login route 
 router.post('/login' , async (req , res) => {

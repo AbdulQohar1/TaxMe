@@ -11,6 +11,7 @@ const app = express();
 
 // routers
 const authRouter = require('./routes/auth');
+const otpRouter = require ('./routes/otp');
 
 // error handler
 const notFoundMiddleware = require('./middleware/not-found');
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use('/auth', authRouter);
+app.use('/auth', otpRouter)
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

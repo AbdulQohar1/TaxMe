@@ -2,7 +2,6 @@ const User = require('../models/user');
 const OTP = require('../models/otp');
 const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, UnauthenticatedError } = require('../errors');
-// const bcrypt = require('bcryptjs');
 
 const register = async (req , res) => {
 	const { fullname, email, password, role, otp} = req.body;

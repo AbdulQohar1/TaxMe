@@ -37,7 +37,8 @@ async function sendVerificationMail (email, otp) {
 
 OtpSchema.pre('save', async function (next) {
 	console.log("New docs saved to the database");
-	// Only send an email when a new user is created
+
+	// send an email only when a new user is created
 	if (this.isNew) {
 		await  sendVerificationMail( this.email, this.otp);
 	};

@@ -1,9 +1,8 @@
 const nodemailer = require('nodemailer');
-const { emit } = require('../models/user');
 
 const mailSender = async (email, title, body) => {
 	try {
-		// Creating transporter for sending mail
+		// create a transporter that sends email
 		let transporter = nodemailer.createTransport({
 			host: process.env.MAIL_HOST,
 			auth: {
@@ -12,7 +11,7 @@ const mailSender = async (email, title, body) => {
 			}
 		});
 
-		// sending mail to user
+		// sending email to user
 		let info = await transporter.sendMail({
 			from: 'adebayoabdulqohar1@gmail.com',
 			to: email,
