@@ -13,7 +13,7 @@ const register = async (req , res) => {
 			success: false,
 			message: 'All fields are required!'
 		})
-	} 
+	};
 
 	// check if user already exists
 	const existingUser = await User.findOne({ email});
@@ -22,7 +22,7 @@ const register = async (req , res) => {
 			success: false,
 			message: 'User already exists',
 		});
-	}
+	};
 
 	// find the most recent otp for a user 
 	const response = await OTP.find({ email}).sort({ createdAt: -1 }).limit(1);
@@ -88,13 +88,13 @@ const getUserProfile = async (req, res, next) => {
     // Send response or call next() to pass control to the next middleware
     res.json({
       user_details: {
-        user_id: user._id,
-        user_status: user.status,
-        user_role: user.role,
-        email: user.usermail
+			user_id: user._id,
+			user_status: user.status,
+			user_role: user.role,
+			email: user.usermail
       }
     });
-		next();
+		next();	
   } catch (error) {
     console.log('Error verifying:', error);
     (error);  // Pass error to Express error handler
