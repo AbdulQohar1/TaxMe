@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 
-const mailSender = async (email, title, body) => {
+const mailSender = async (email, body) => {
 	try {
 		// create a transporter that sends email
 		let transporter = nodemailer.createTransport({
@@ -13,9 +13,9 @@ const mailSender = async (email, title, body) => {
 
 		// sending email to user
 		let info = await transporter.sendMail({
-			from: 'adebayoabdulqohar1@gmail.com',
+			from: process.env.MAIL_USER,
 			to: email,
-			subject: title,
+			subject: "Verify your Email",
 			html: body,
 		});
 

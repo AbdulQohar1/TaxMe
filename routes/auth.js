@@ -9,52 +9,10 @@ const router = express.Router();
 
 
 router.post('/register' , authController.register);
-// register user route
-// router.post('/register', async (req , res) => {
-//   try {
-//     const { email, fullname, password, number} = req.body;
-    
-//     // check if user already exists
-//     const existingUser = await User.findOne({ email });
-
-//     if (existingUser) {
-//       return res.status(StatusCodes.BAD_REQUEST).json({
-//         error_msg: 'User already exists',
-//         success: false,
-//       });
-//     }
-
-//     // create a new user 
-//     const user = await User.create({ email, fullname, password, number });
-
-//     // generate OTP
-//   } catch (error) {
-
-//   }
-// })
-
-
-// router.post('/register', async (req , res) =>{
-// 	try {
-// 		const user = await User.create({ ...req.body });
-
-// 		const token = user.createToken();
-
-// 		res.status(StatusCodes.CREATED).json({
-// 			user: { email: user.email },
-// 			token
-// 		});
-// 		} catch (error) {
-// 			console.error("Error during registration:", error);
-			
-// 			res.status(StatusCodes.BAD_REQUEST).json({ err: error.message || "Something went wrong" });
-// 		};
-// })
-
 
 // user login route 
 router.post('/login' , async (req , res) => {
-    const { email, password} = req.body;
+  const { email, password} = req.body;
 
 	// check if user credentials is provided
 	if (!email || !password) {
@@ -140,3 +98,46 @@ router.get('/get-profile' , async (req , res) => {
 });
 
 module.exports = router;
+
+
+// register user route
+// router.post('/register', async (req , res) => {
+//   try {
+//     const { email, fullname, password, number} = req.body;
+    
+//     // check if user already exists
+//     const existingUser = await User.findOne({ email });
+
+//     if (existingUser) {
+//       return res.status(StatusCodes.BAD_REQUEST).json({
+//         error_msg: 'User already exists',
+//         success: false,
+//       });
+//     }
+
+//     // create a new user 
+//     const user = await User.create({ email, fullname, password, number });
+
+//     // generate OTP
+//   } catch (error) {
+
+//   }
+// })
+
+
+// router.post('/register', async (req , res) =>{
+// 	try {
+// 		const user = await User.create({ ...req.body });
+
+// 		const token = user.createToken();
+
+// 		res.status(StatusCodes.CREATED).json({
+// 			user: { email: user.email },
+// 			token
+// 		});
+// 		} catch (error) {
+// 			console.error("Error during registration:", error);
+			
+// 			res.status(StatusCodes.BAD_REQUEST).json({ err: error.message || "Something went wrong" });
+// 		};
+// })

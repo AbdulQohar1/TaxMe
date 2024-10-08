@@ -28,7 +28,7 @@ const register = async (req , res) => {
 
 	if (response.length === 0 || otp !== response[0].otp) {
 		return res.status(StatusCodes.BAD_REQUEST).json({
-			success: false,
+			success: false, 
 			message: 'The provided OTP is not valid',
 		});
 	}

@@ -2,22 +2,24 @@ const mongoose = require('mongoose');
 const mailSender = require('../utilis/mailSender');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { string } = require('joi');
 
 // creating otp schema
 const OtpSchema = new mongoose.Schema({
-    email: {
-        type: String,
-        required: true,
-    },
-    otp: {
-        type: String,
-        required: true,
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-        expires: 60 * 5
-    }
+	userId: String,
+	email: {
+		type: String,
+		required: true,
+	},
+	otp: {
+		type: String,
+		required: true,
+	},
+	createdAt: {
+		type: Date,
+		default: Date.now,
+		expires: 60 * 5,
+	}
 })
 
 // encrypting user's otp
@@ -46,10 +48,19 @@ OtpSchema.pre('save', async function encryptedOTP(next) {
 	};
 
 	const salt = await bcrypt.genSalt(15);
-	this.otp = await bcrypt.hash(this.otp, salt)
-	console.log("New docs saved to the database");
+	const hashedOTP = await bcrypt.hash(this.otp , salt);
 
-	next();
+	const newUserOTP = await new userOTP ({
+		email: this.email,
+		otp: hashedOTP,
+		createdAt: Date.now(),
+	})
+
+	// save otp record
+	await newUserOTP.save();
+	console.log("New docs saved to the database", newUserOTP);
+
+	next(); 
 })
 
 // compare user's otp and the provided otp
