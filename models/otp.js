@@ -22,8 +22,10 @@ const OtpSchema = new mongoose.Schema({
 	}
 })
 
-// encrypting user's otp
+// create the Otp model
+const OtpModel = mongoose.model('Otp', OtpSchema);
 
+// encrypting user's otp
 // function that sends email
 async function sendVerificationMail (email, otp) {
 	try {
@@ -48,20 +50,25 @@ OtpSchema.pre('save', async function encryptedOTP(next) {
 	};
 
 	const salt = await bcrypt.genSalt(15);
-	const hashedOTP = await bcrypt.hash(this.otp , salt);
+	let hashedOTP = await bcrypt.hash(this.otp , salt);
 
-	const newUserOTP = await new userOTP ({
+	// const newUserOTP = await new userOTP ({
+	// 	email: this.email,
+	// 	otp: hashedOTP,
+	// 	createdAt: Date.now(),
+	// })
+	const newUserOTP = await new OtpModel({
 		email: this.email,
-		otp: hashedOTP,
-		createdAt: Date.now(),
-	})
+		otp: hashedOTP, // Hashed OTP from earlier
+		createdAt: Date.now()
+	});
+		// save otp record
+		await newUserOTP.save();
+		console.log("New docs saved to the database", newUserOTP);
 
-	// save otp record
-	await newUserOTP.save();
-	console.log("New docs saved to the database", newUserOTP);
+	next();
+});
 
-	next(); 
-})
 
 // compare user's otp and the provided otp
 OtpSchema.methods.compareOTP = async function (providedOtp) {

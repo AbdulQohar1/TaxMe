@@ -1,6 +1,7 @@
 const otpGenerator = require('otp-generator');
 const OTP = require('../models/otp');
 const User = require('../models/user');
+const mailSender =  require('../utilis/mailSender');
 
 exports.sendOTP = async (req, res) => {
 	try {
@@ -34,6 +35,7 @@ exports.sendOTP = async (req, res) => {
 		const otpPayload = { email, otp};
 		let otpBody = await OTP.create( otpPayload);
 
+		mailSender(email, body)
 		res.status(200).json({
 			success: true,
 			message: 'OTP sent successfully!', 
