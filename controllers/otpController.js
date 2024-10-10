@@ -35,11 +35,11 @@ exports.sendOTP = async (req, res) => {
 		const otpPayload = { email, otp};
 		let otpBody = await OTP.create( otpPayload);
 
-		mailSender(email, body)
+	
 		res.status(200).json({
 			success: true,
 			message: 'OTP sent successfully!', 
-			otp,
+			otpBody
 		})
 
 	} catch (error) {
