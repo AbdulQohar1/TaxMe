@@ -2,44 +2,79 @@ const User = require('../models/user');
 const OTP = require('../models/otp');
 const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, UnauthenticatedError } = require('../errors');
+const bcrypt = require('bcryptjs')
 
 const register = async (req , res) => {
-	const { fullname, email, password, role, otp} = req.body;
+	try {
+
+		const { fullname, email, password, role, otp} = req.body;
+		
+		// check if all necessary details are provided 
+		if (!fullname || !email || !password || !otp) {
+			return res.status(StatusCodes.FORBIDDEN).json({
+				success: false,
+				message: 'All fields are required!'
+			})
+		};
 	
-	// check if all necessary details are provided 
-	if (!fullname || !email || !password || !otp) {
-		return res.status(StatusCodes.FORBIDDEN).json({
-			success: false,
-			message: 'All fields are required!'
-		})
-	};
-
-	// check if user already exists
-	const existingUser = await User.findOne({ email});
-	if (existingUser) {
-		return res.status(StatusCodes.BAD_REQUEST).json({
-			success: false,
-			message: 'User already exists',
+		// check if user already exists
+		const existingUser = await User.findOne({ email});
+		if (existingUser) {
+			return res.status(StatusCodes.BAD_REQUEST).json({
+				success: false,
+				message: 'User already exists',
+			});
+		};
+	
+		// find the most recent otp received by a user 
+		const response = await OTP.find({ email}).sort({ createdAt: -1 }).limit(1);
+	
+		// if (response.length === 0 || otp !== response[0].otp) {
+		// 	return res.status(StatusCodes.BAD_REQUEST).json({
+		// 		success: false, 
+		// 		message: 'The provided OTP is not valid',
+		// 	});
+		// }
+	
+		if (response.length === 0) {
+			return res.status(StatusCodes.BAD_REQUEST).json({
+				success: false,
+				message: 'The provided OTP is not valid',
+			});
+		}
+	
+		const savedOtp = response[0].otp;
+	
+		// Compare the provided OTP with the hashed OTP from the database
+		const isOtpValid = await bcrypt.compare(otp.toString(), savedOtp);
+	
+		if (!isOtpValid) {
+			return res.status(StatusCodes.BAD_REQUEST).json({
+				success: false,
+				message: 'The provided OTP is not valid',
+			});
+		}
+	
+		// if OTP is valid, create the user
+		const user = await User.create({ ...req.body });
+	
+		// generate a token for the user
+		const token = user.createToken();
+		res.status(StatusCodes.CREATED).json({ 
+			user: {email: user.email}, 
+			token
 		});
-	};
+	} catch (error) {
+		// Log the full error for debugging
+		console.error("Error during registration:", error);
 
-	// find the most recent otp for a user 
-	const response = await OTP.find({ email}).sort({ createdAt: -1 }).limit(1);
-
-	if (response.length === 0 || otp !== response[0].otp) {
-		return res.status(StatusCodes.BAD_REQUEST).json({
-			success: false, 
-			message: 'The provided OTP is not valid',
+		// Return a more detailed error response
+		return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+			success: false,
+			message: 'An error occurred during registration.',
+			error: error.message || 'Internal Server Error',
 		});
 	}
-
-	const user = await User.create({ ...req.body });
-
-	const token = user.createToken();
-	res.status(StatusCodes.CREATED).json({ 
-		user: {email: user.email}, 
-		token
-	});
 }
 
 // user login handler

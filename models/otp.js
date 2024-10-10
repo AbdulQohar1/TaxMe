@@ -51,11 +51,11 @@ async function sendVerificationMail(email, otp) {
 };
 
 
-// Compare user's OTP with the provided OTP
-OtpSchema.methods.compareOTP = async function (providedOtp) {
-	const otpMatch = await bcrypt.compare(providedOtp, this.otp);
-	return otpMatch;
-};
+// // Compare user's OTP with the provided OTP
+// OtpSchema.methods.compareOTP = async function (providedOtp) {
+// 	const otpMatch = await bcrypt.compare(providedOtp, this.otp);
+// 	return otpMatch;
+// };
 
 // Create the Otp model
 const OtpModel = mongoose.model('otp', OtpSchema);
