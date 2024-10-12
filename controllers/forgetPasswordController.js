@@ -1,8 +1,26 @@
 const { User } = require('../models/user');
+const OTP = require('../models/otp');
 const { StatusCodes } = require('http-status-codes');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+
+// send reset password email
+
+async function sendResetPasswordMail(email, otp) {
+	try {
+		const mailResponse = await mailSender(
+			email,
+			`<h2>Here's passord reset OTP</h2>
+			<p>Here's your OTP code: ${otp}</p>`
+		);
+		console.log("Verification email sent successfully: ", mailResponse);
+	} catch (error) {
+		console.log("Error occurred while sending email: ", error);
+		throw error;
+	}
+};
+
 
 const forgotPassword = async (res , req) => {
   try {
@@ -45,52 +63,95 @@ const forgotPassword = async (res , req) => {
       })
 
     } catch (error) {
-
+      console.log(error.message);
+		  return res.status(500).json({
+			success: false,
+			error: error.message
+		})
     }
-   /* 
+   
     // send resetToken to user's email 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.MAIL_USER,
-				pass: process.env.MAIL_PASS,
-      },
-    });
-
-    // setting up email content and recipient
-    const mailOptions = {
-      from: 'your-email@gmail.com',
-      to: email,
-      subject: 'Password Reset',
-      text: `Click the following link to reset your password: http://localhost:3000/reset-password/${token}`,
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        res.status(StatusCodes.FORBIDDEN).json({
-          success: false,
-          message: 'Error sending reset password email'
-        })
-      } else {
-        res.status(StatusCodes.OK).json({
-          success: success,
-          message: 'Check your email for instructions on resetting your password...'
-        })
-      }
-    });   
-  } catch (error) {
+    try {
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASS,
+        },
+      });
+  
+      // setting up email content and recipient
+      const mailOptions = {
+        from: 'your-email@gmail.com',
+        to: email,
+        subject: 'Password Reset',
+        text: `Click the following link to reset your password: http://localhost:3000/reset-password/${OTP}`,
+      };
+  
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          res.status(StatusCodes.FORBIDDEN).json({
+            success: false,
+            message: 'Error sending reset password email'
+          })
+        } else {
+          res.status(StatusCodes.OK).json({
+            success: success,
+            message: 'Check your email for instructions on resetting your password...'
+          })
+        }
+      });   
+    } catch (error) {
     res.status(StatusCodes.NOT_FOUND).json({
       success: false,
 			message: 'Email not found...'
     })
   }
-  */
+
 };
 
-exports.resetPassword = async (req, res) => {
+const resetPassword = async (req, res) => {
   try {
+    const { otp, newPassword, confirmPassword } = req.body;
 
+    if (!otp || !newPassword || !confirmPassword) {
+      return res.status(StatusCodes.FORBIDDEN).json({
+        error: true,
+        message:
+          "Couldn't process request. Please provide all mandatory fields",
+      });
+    }
+
+    const user = await User.findOne({
+      resetPasswordOTP: req.body.otp,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.send({
+        error: true,
+        message: "Password reset token is invalid or has expired.",
+      });
+    }
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        error: true,
+        message: "Passwords didn't match",
+      });
+    }
+
+    console.log(newPassword);
+    
   } catch (error) {
-
+    console.error("reset-password-error", error);
+    return res.status(500).json({
+      error: true,
+      message: error.message,
+    });
   }
+}
+
+module.exports = {
+  resetPassword,
+  forgotPassword 
 }

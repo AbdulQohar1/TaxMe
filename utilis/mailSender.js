@@ -16,7 +16,7 @@ const mailSender = async (email, body ) => {
 			from: process.env.MAIL_USER,
 			to: email,
 			subject: "Verify your Email",
-			html: body,
+			text: body,
 		});
 
 		console.log("Email info:", info);
