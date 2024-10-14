@@ -35,7 +35,8 @@ const UserSchema = new mongoose.Schema({
         return val === this.password
       }, 
       message: 'Password and Confirm password does not match'
-    }
+    },
+    select: false
   },
   contact: {
     type: Number,
@@ -93,7 +94,8 @@ UserSchema.methods.createResetPasswordToken = async function () {
   // encrpt token before saving to db
   this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex'); 
 
-  this.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000; //resetToken expires in 10 mins 
+  //resetToken expires in 5 mins  
+  this.passwordResetTokenExpires = Date.now() + 5  * 60 * 1000;  
 
   console.log(resetToken , this.passwordResetToken);
   
