@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const mailSender = require('../utilis/mailSender');
+const { mailSender } = require('../utilis/mailSender');
 const bcrypt = require('bcryptjs');
 
 // creating otp schema
@@ -36,7 +36,7 @@ OtpSchema.pre('save', async function (next) {
 });
 
 // Function that sends email
-async function sendVerificationMail(email, otp) {
+async function sendVerificationMail(email, otp, body) {
 	try {
 		const mailResponse = await mailSender(
 			email,

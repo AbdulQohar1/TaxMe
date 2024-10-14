@@ -16,7 +16,7 @@ const mailSender = async (email, body ) => {
 			from: process.env.MAIL_USER,
 			to: email,
 			subject: "Verify your Email",
-			text: body,
+			html: body,
 		});
 
 		console.log("Email info:", info);
@@ -32,7 +32,8 @@ const passwordResetMailSender = async (email, body ) => {
 	try {
 		// create a transporter that sends email
 		let transporter = nodemailer.createTransport({
-			host: process.env.MAIL_HOST,
+			// host: process.env.MAIL_HOST,
+			service: process.env.MAIL_SERVICE || 'gmail',
 			auth: {
 				user: process.env.MAIL_USER,
 				pass: process.env.MAIL_PASS,
@@ -47,13 +48,17 @@ const passwordResetMailSender = async (email, body ) => {
 			html: body,
 		});
 
-		console.log("Email info:", info);
+		console.log("Email sent successfully:", info);
 		return info;
 	} catch (error) {
+		console.error("Error sending password reset email:", error.message);
 		throw new Error(error.message);
 
 	}
 }
 
 
-module.exports = {mailSender, passwordResetMailSender };
+module.exports = { 
+	mailSender, 
+	passwordResetMailSender, 
+};

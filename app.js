@@ -12,6 +12,7 @@ const app = express();
 // routers
 const authRouter = require('./routes/auth');
 const otpRouter = require ('./routes/otp');
+const resetPasswordRouter  = require('./routes/passwordReset');
 
 // error handler
 const notFoundMiddleware = require('./middleware/not-found');
@@ -23,7 +24,8 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use('/auth', authRouter);
-app.use('/auth', otpRouter)
+app.use('/auth', otpRouter);
+app.use('/user', resetPasswordRouter)
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
