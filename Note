@@ -1,0 +1,182 @@
+const forgotPassword = async (req, res  ) => {
+
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
+      },
+    });
+
+    // setting up email content and recipient
+    const mailOptions = {
+      from: 'your-email@gmail.com',
+      to: email,
+      subject: 'Password Reset',
+      text: `Click the following link to reset your password: http://localhost:3000/reset-password/${OTP}`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        res.status(StatusCodes.FORBIDDEN).json({
+          success: false,
+          message: 'Error sending reset password email'
+        })
+      } else {
+        res.status(StatusCodes.OK).json({
+          success: success,
+          message: 'Check your email for instructions on resetting your password...'
+        })
+      }
+    });   
+  } catch (error) {
+  res.status(StatusCodes.NOT_FOUND).json({
+    success: false,
+    message: 'Email not found...'
+  })
+}
+  try {
+    const user = await User.findOne({ email: req.body.email})
+
+    // check if user exist in the db
+    if (!user) {
+      res.status(StatusCodes.NOT_FOUND).json({
+      success: false,
+      message: "Couldn't find the user with the provided email"
+      });
+    }
+
+    // Generate the reset token using the instance method defined in the user schema
+    const resetToken = await user.createResetPasswordToken();
+  
+    // Save the user with the new token and expiry date
+    await user.save();
+ 
+    // send reset password mail
+    await passwordResetMailSender(user.email, resetToken);
+
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: 'Reset password email sent successfully',
+    });
+  } catch (error) {
+    console.log(error.message)
+     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: 'An error occurred while processing your res-password request',
+    });
+  }
+
+
+  
+}
+
+
+
+
+// router.get('/get-profile', async (req, res) => {
+//   try {
+//     // Extract useremail and usertoken from headers
+//     const { email, token } = req.headers;  
+//     console.log('Headers received:', req.headers);
+
+//     // Verify if useremail and usertoken are provided
+//     if (!email || !token) {
+//       return res.status(StatusCodes.UNAUTHORIZED).json({
+//         err: 'User email or token is missing'
+//       });
+//     }
+
+//     // Verify the token using the private key
+//     let decodedToken;
+//     try {
+//       decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+//     } catch (error) {
+//       console.error('Token verification failed:', error);
+//       return res.status(StatusCodes.UNAUTHORIZED).json({ err: 'Invalid token!' });
+//     }
+
+//     // If decodedToken is not found, return error
+//     if (!decodedToken) {
+//       return res.status(StatusCodes.UNAUTHORIZED).json({ err: 'Invalid token!' });
+//     }
+
+//     console.log('Decoded token:', decodedToken);
+
+//     // Find user in the database by email
+//     const user = await User.findOne({ email: email });
+
+//     if (!user) {
+//       console.error('User not found for email:', email);
+//       return res.status(StatusCodes.NOT_FOUND).json({ err: 'User not found' });
+//     }
+
+//     // Return the user profile information
+//     res.status(StatusCodes.OK).json({
+//       user_details: {
+//         user_id: user._id,
+//         user_status: user.status || 'active', // Assuming user status is stored in `status`
+//         user_role: user.role || 'user', // Assuming user role is stored in `role`
+//         email: user.email
+//       }
+//     });
+//   } catch (error) {
+//     console.error('Error in /get-profile route:', error);
+
+//     if (error.name === 'JsonWebTokenError') {
+//       return res.status(StatusCodes.UNAUTHORIZED).json({ err: 'Invalid token!' });
+//     }
+
+//     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ err: 'Something went wrong', details: error.message });
+//   }
+// });
+
+
+
+
+
+
+// async function connectToDatabase() {
+//   try {
+//     await client.connect();
+//     db = client.db("userdb"); // Replace "userdb" with your database name
+//     console.log("Connected to MongoDB");
+//   } catch (error) {
+//     console.error("Could not connect to MongoDB", error);
+//     process.exit(1);
+//   }
+// }
+
+// // Middleware to verify user token
+// async function verifyToken(req, res, next) {
+//   const { useremail, usertoken } = req.headers;
+
+//   try {
+//     const user = await db.collection('users').findOne({ email: useremail, token: usertoken });
+
+//     if (!user) {
+//       return res.status(401).json({ error: 'Unauthorized' });
+//     }
+
+//     req.user = user;
+//     next();
+//   } catch (error) {
+//     console.error("Error verifying token:", error);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// }
+
+// // GET /get-profile endpoint
+// app.get('/get-profile', verifyToken, (req, res) => {
+//   const { _id, status, role, email } = req.user;
+
+//   res.json({
+//     user_details: {
+//       user_id: _id.toString(),
+//       user_status: status,
+//       user_role: role,
+//       email: email
+//     }
+//   });
+// });
