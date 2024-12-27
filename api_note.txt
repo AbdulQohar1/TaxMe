@@ -1,0 +1,36 @@
+Tax returns user app
+API endpoints..
+
+shared header - {'Content-Type': 'application/json'}
+
+/login - body: {email, password}. returns {user_security: {access_token}}
+/get-profile - headers: {access_token}. return {user_details: {user_id, user_status, user_role, email}}
+/register - body: {fullname, phonenumber, email, password, userRole: "user"}. Would generate OTP for creating account
+/confirm-otp - body: {email, pin}. if recover password.. body: {type:"email", email, pin:otp}.
+/forget-password - headers: {'Content-Type': 'text/plain'}, body: {email}. Would generate OTP for creating account
+/update-category: headers: {useremail, usertoken}, body: {category}. // POST
+/upload-tax-documents: headers: {access_token}, body: {docs:[]}
+/delete-user - headers: {access_token}.
+/logout - headers: {access_token}
+
+/update-user-photo: headers: {useremail, usertoken}, body: {user_profilephoto: {base64, id} // PUT
+
+/user-category-list - return {category_list: [{name, id}]} // GET
+/get-services - return {services: [{title, service_id}]}
+/request-service - headers: {useremail, usertoken}, body: {service_id, category, user_id}
+
+/upload-document - headers: {useremail, usertoken}, body: {id,document_name,document_size,document_type,date_modified,base64} // POST
+/get-documents - headers: {useremail, usertoken}. returns {documents: [{id,document_name,document_size,document_type,date_modified,base64}]} // GET
+
+/get-receipts - headers: {useremail, usertoken}. returns {receipts: [{title, owner_info: {fullname, user_id}, receipt_date}]}
+
+/get-transactions - headers: {useremail, usertoken}. returns {transactions: []} // this is still to be reformed tho..
+
+/get-requests - headers: {useremail, usertoken}. returns {requests: [{}]}
+
+// Send the token to your server for further processing
+/add-card - headers: {useremail, usertoken}, body: {token: token.id, default: "yes"}
+/get-card -  headers: {useremail, usertoken}. returns {card_id,name, last4Digit, brand, exp_month, exp_year}
+/remove-card - headers: {useremail, usertoken}, method: "delete", data: {card_id} 
+
+
