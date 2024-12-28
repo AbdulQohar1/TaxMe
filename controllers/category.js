@@ -44,6 +44,57 @@ const selectCategory = async (req , res) => {
   }
 }
 
+const upgradeCategory =  async (req , res) => {
+  try {
+    // email from headers
+    const { useremail } = req.headers; 
+    // new category from body
+    const { category } = req.body;
+
+    // validate category
+    if (!['basic', 'gold', 'premium'].includes(category)) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        success: false,
+        message: 'Invalid category selected',
+      });
+    }
+
+    // find user 
+    const user = await User.findOne({ email: useremail});
+
+    if (!user) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        success: false,
+        message: 'User not found'
+      })
+    }
+
+    // check if user is already in the selected category
+    if (user.category === category) {
+      return res.status(400).json({
+        success: false,
+        message: `You're already in the ${category} category`,
+      });
+    }
+
+    // update user's category
+    user.category = category;
+    await user.save();
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: 'Category upgraded successfully.',
+      data: user,
+    });
+  }
+  catch (error ){
+    console.error('Error upgrading category:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "Can't upgrade category. Please try again later. ",
+    });
+  }
+}
 // const updateCategory =  async (req, res) => {
 //   try {
 //     // extract header and body
@@ -95,5 +146,6 @@ const selectCategory = async (req , res) => {
 // }
 
 module.exports = {
-  // updateCategory
+  selectCategory,
+  upgradeCategory
 };
