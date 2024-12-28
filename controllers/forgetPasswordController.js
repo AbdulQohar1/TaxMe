@@ -138,7 +138,10 @@ const resetPassword = async (req, res) => {
   }
 }
 
-
+module.exports = {
+  forgotPassword,
+  resetPassword,
+}
 // const resetPassword = async ( req, res) => {
 //   try {
 //     // get token from url params
@@ -181,9 +184,5 @@ const resetPassword = async (req, res) => {
 //   }
 // }  
         
-module.exports = {
-  forgotPassword,
-  resetPassword,
-}
 
 

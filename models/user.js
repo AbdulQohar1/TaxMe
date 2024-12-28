@@ -50,6 +50,11 @@ const UserSchema = new mongoose.Schema({
     type: String, 
     default: 'user'
   },
+  category: {
+    type: String,
+    enum: ['basic' , 'gold'  , 'premium'],
+    default: 'basic',
+  },
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetTokenExpires: Date

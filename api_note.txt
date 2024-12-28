@@ -4,11 +4,17 @@ API endpoints..
 shared header - {'Content-Type': 'application/json'}
 
 /login - body: {email, password}. returns {user_security: {access_token}}
+
 /get-profile - headers: {access_token}. return {user_details: {user_id, user_status, user_role, email}}
+
 /register - body: {fullname, phonenumber, email, password, userRole: "user"}. Would generate OTP for creating account
+
 /confirm-otp - body: {email, pin}. if recover password.. body: {type:"email", email, pin:otp}.
+
 /forget-password - headers: {'Content-Type': 'text/plain'}, body: {email}. Would generate OTP for creating account
+
 /update-category: headers: {useremail, usertoken}, body: {category}. // POST
+
 /upload-tax-documents: headers: {access_token}, body: {docs:[]}
 /delete-user - headers: {access_token}.
 /logout - headers: {access_token}
