@@ -1,6 +1,6 @@
 const express = require('express');
 const { 
-  setCategory,
+  selectCategory,
   upgradeCategory
 } = require('../controllers/category');
 const  { 
@@ -14,9 +14,7 @@ router.get('/' , getAllUsers);
 router.post('/register' , register);
 router.post('/login' , login)
 router.get('/getUserProfile' , getUserProfile);
-router.post('/set-category', setCategory);
-router.patch('/update-category', upgradeCategory)
-
-// router.post('/updateCategory',  updateCategory)
+router.post('/select-category', selectCategory);
+router.patch('/upgrade-category', upgradeCategory)
 
 module.exports = router;
