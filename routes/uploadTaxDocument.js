@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const uploadTaxDocument = require('../middleware/multer');
+const uploadMiddleware = require('../middleware/multer');
 const {uploadDocument} = require('../controllers/uploadTaxDocument')
 
-router.post('/uploadTaxDocument', uploadTaxDocument.single('document'),uploadDocument );
+router.post('/upload-tax-document', uploadMiddleware.single('document'),uploadDocument );
 
 module.exports = router;
