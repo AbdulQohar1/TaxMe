@@ -1,10 +1,10 @@
-const express = require('express');
-const mongoose = require('mongoose');
+
 const { StatusCodes } = require('http-status-codes');
-const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
+// const multer = require('multer');
+// const { CloudinaryStorage } = require('multer-storage-cloudinary');
+// const uploadTaxDocument = require('../middleware/multer');
 const cloudinary = require('../utilis/cloudinaryConfig');
-const uploadTaxDocument = require('../middleware/multer');
+
 
 // Set up Cloudinary storage
 const uploadDocument = async (req , res) => {
@@ -17,12 +17,26 @@ const uploadDocument = async (req , res) => {
       })
     }
 
+    console.log(process.env.CLOUDINARY_CLOUD_NAME);
+    console.log(process.env.CLOUDINARY_API_KEY);
+    console.log(process.env.CLOUDINARY_API_SECRET);
+
+
     // upload document to cloudinary 
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      // cloudinary folder name  
-      folder: 'documents' 
-      // specify resource type for documents
+    const filePath = req.file.path;
+    console.log('Uploaded File Path:', filePath);
+
+    const result = await cloudinary.uploader.upload(filePath, {
+      resource_type: 'raw',
+      folder: 'documents'
     });
+
+    // const result = await cloudinary.uploader.upload(req.file.path, {
+    //   resource_type: 'raw',
+    //   // cloudinary folder name  
+    //   folder: 'documents' 
+    //   // specify resource type for documents
+    // });
 
     // respond with success and  file details
     return res.status(StatusCodes.OK).json({
