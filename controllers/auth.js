@@ -2,7 +2,8 @@ const User = require('../models/user');
 const OTP = require('../models/otp');
 const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, UnauthenticatedError } = require('../errors');
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
+const { deleteModel } = require('mongoose');
 
 const register = async (req , res) => {
 	try {
@@ -156,10 +157,41 @@ const getAllUsers = async (req, res) => {
 		res.status(500).json({ success: false, error: 'find user error' });
 
 	}
+};
+
+const deleteUser = async (req, res) => {
+	try {
+		const userId = req.user.id;
+
+		const user = await User.findByIdAndUpdate(userId, { active: false});
+
+		if (!user) {
+			return res.status(StatusCodes.NOT_FOUND).json({
+				success: false,
+				message: 'User not found.'
+			})
+		}
+
+		res.status(StatusCodes.NO_CONTENT).json({
+			success: true,
+			message: 'User account deleted.',
+			data: null
+		})
+	} 
+	catch( error) {
+		console.log('Error deleting user: ', error);
+		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+			success: false,
+			message: 'Failed to delete user.'
+		})		
+	}
 }
+
+
 module.exports = {
 	register, 
 	login,
 	getUserProfile,
-	getAllUsers
+	getAllUsers,
+	deleteUser
 }
