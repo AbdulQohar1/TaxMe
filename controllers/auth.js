@@ -161,10 +161,20 @@ const getAllUsers = async (req, res) => {
 
 const deleteUser = async (req, res) => {
 	try {
+		// validate user ID
 		const userId = req.user.id;
 
+		if (!userId) {
+			return res.status(StatusCodes.BAD_REQUEST).json({
+				success: false,
+				message: 'User ID is required.'
+			})
+		}
+		
+		// soft delete (mark as inactive)
 		const user = await User.findByIdAndUpdate(userId, { active: false});
 
+		// check if user exists
 		if (!user) {
 			return res.status(StatusCodes.NOT_FOUND).json({
 				success: false,
@@ -172,7 +182,8 @@ const deleteUser = async (req, res) => {
 			})
 		}
 
-		res.status(StatusCodes.NO_CONTENT).json({
+		// send success response
+		res.status(StatusCodes.OK).json({
 			success: true,
 			message: 'User account deleted.',
 			data: null

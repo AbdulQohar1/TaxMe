@@ -14,9 +14,10 @@ const otpRouter = require ('./routes/otp');
 const forgotPasswordRouter  = require('./routes/passwordReset');
 const usersRouter = require('./routes/auth');
 const userCategoryRouter =  require('./routes/auth');
-const uploadDocumentRouter = require('./routes/uploadTaxDocument')
+const uploadDocumentRouter = require('./routes/uploadTaxDocument');
 
 // error handler
+const authMiddleware = require('./middleware/authentication');
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
 
