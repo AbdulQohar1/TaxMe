@@ -159,6 +159,46 @@ const getAllUsers = async (req, res) => {
 	}
 };
 
+const logoutUser =  async ( req, res) => {
+	const blacklist = [];
+
+	try {
+		// get the token from headers
+		const token =  req.headers['access_token'];
+
+		if (!token) {
+			return  res.status(StatusCodes.UNAUTHORIZED).json({
+				success: false,
+				message: 'Access token is required.'
+			})
+		};
+
+		// verify token
+		if  (blacklist.includes(token)) {
+			return res.status(StatusCodes.UNAUTHORIZED).json({
+				success: false,
+				message: 'Token has already been invalidated.'
+			})
+		};
+
+		// add token to the blacklist 
+		blacklist.push(token);
+
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: 'User logged out successfully.'
+		})
+		
+	} catch ( error) {
+		console.log('Error logging out user: ', error );
+
+		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+			success: false,
+			message: 'Failed to logout user',
+		})
+	};
+}
+
 const deleteUser = async (req, res) => {
 	try {
 		// validate user ID
@@ -204,5 +244,6 @@ module.exports = {
 	login,
 	getUserProfile,
 	getAllUsers,
+	logoutUser,
 	deleteUser
 }

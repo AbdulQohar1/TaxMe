@@ -19,7 +19,7 @@ shared header - {'Content-Type': 'application/json'}
 /delete-user - headers: {access_token}.
 /logout - headers: {access_token}
 
-/update-user-photo: headers: {useremail, usertoken}, body: {user_profilephoto: {base64, id} // PUT
+/update-user-photo: headers: {useremail, usertoken}, body:{user_profilephoto: {base64, id} // PUT
 
 /user-category-list - return {category_list: [{name, id}]} // GET
 /get-services - return {services: [{title, service_id}]}

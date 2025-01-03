@@ -4,10 +4,14 @@ const {
   upgradeCategory
 } = require('../controllers/category');
 const  { 
-  register, login, 
-  getUserProfile, getAllUsers,
+  register, 
+  login, 
+  getUserProfile, 
+  getAllUsers,
+  logoutUser,
   deleteUser
 } = require('../controllers/auth');
+const authMiddleware = require('../middleware/authentication');
 
 const router = express.Router();
 
@@ -17,6 +21,7 @@ router.post('/login' , login);
 router.get('/getUserProfile' , getUserProfile);
 router.post('/select-category', selectCategory);
 router.patch('/upgrade-category', upgradeCategory);
-router.delete('/delete', deleteUser)
+router.delete('/delete-user', authMiddleware, deleteUser);
+router.post('/logout' , logoutUser)
 
 module.exports = router;
