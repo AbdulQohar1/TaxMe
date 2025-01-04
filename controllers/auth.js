@@ -3,7 +3,6 @@ const OTP = require('../models/otp');
 const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, UnauthenticatedError } = require('../errors');
 const bcrypt = require('bcryptjs');
-const { deleteModel } = require('mongoose');
 
 const register = async (req , res) => {
 	try {

@@ -23,8 +23,6 @@ const mailSender = async (email, body ) => {
 		return info;
 	} catch (error) {
 		throw new Error(error.message);
-
-		// console.log(error.message);	
 	}
 }
 
@@ -53,10 +51,8 @@ const passwordResetMailSender = async (email, body ) => {
 	} catch (error) {
 		console.error("Error sending password reset email:", error.message);
 		throw new Error(error.message);
-
 	}
 }
-
 
 module.exports = { 
 	mailSender, 

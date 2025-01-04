@@ -64,18 +64,6 @@ const resetPassword = async (req, res) => {
     // provide new password and token sent to user email
     const { token, newPassword, confirmPassword } = req.body;
 
-    // console.log('Received token:', token);
-    
-    // // Find the user and log the full query
-    // const query = {
-    //   passwordResetToken: token,
-    //   passwordResetTokenExpires: { $gt: Date.now() }
-    // };
-    // console.log('Query:', query);
-    
-    // const user = await User.findOne(query);
-    // console.log('Found user:', user);
-
     // validate provided credentials
     if (!token || !newPassword || !confirmPassword) {
       return res.status(StatusCodes.FORBIDDEN).json({
@@ -141,48 +129,6 @@ const resetPassword = async (req, res) => {
 module.exports = {
   forgotPassword,
   resetPassword,
-}
-// const resetPassword = async ( req, res) => {
-//   try {
-//     // get token from url params
-//     const { token } = req.params;
-//     const { newPassword } = req.body;
-
-//     // find the user by the reset token and check if it's still valid
-//     const user = await User.findOne({
-//       passwordResetToken: token,
-//       passwordResetTokenExpires: { $gt: Date.now() }
-//     });
-
-//     // if token is invalid or expired
-//     if (!user) {
-//       return res.status(StatusCodes.BAD_REQUEST).json({
-//         success: false,
-//         message: 'Invalid or expired reset token',
-//       });
-//     }
-
-//     // hash the new password
-//     const salt = await bcrypt.getSalt(10);
-//     user.password = await bcrypt.hash(newPassword, salt);
-
-//     // save the updated user
-//     await user.save();
-
-//     res.status(StatusCodes.OK).json({
-//       success: true,
-//       message: 'Password reset successfully. You can now log in.',
-//     });
-  
-//   } catch ( error) {
-//     console.log('Error resetting user password:' , error.message);
-
-//     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-//       success: false,
-//       message: 'Failed to reset password. Please try again later.'
-//     })
-//   }
-// }  
-        
+};
 
 

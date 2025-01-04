@@ -1,10 +1,5 @@
-
 const { StatusCodes } = require('http-status-codes');
-// const multer = require('multer');
-// const { CloudinaryStorage } = require('multer-storage-cloudinary');
-// const uploadTaxDocument = require('../middleware/multer');
 const cloudinary = require('../utilis/cloudinaryConfig');
-
 
 // Set up Cloudinary storage
 const uploadDocument = async (req , res) => {
@@ -21,30 +16,24 @@ const uploadDocument = async (req , res) => {
     console.log(process.env.CLOUDINARY_API_KEY);
     console.log(process.env.CLOUDINARY_API_SECRET);
 
-
     // upload document to cloudinary 
     const filePath = req.file.path;
     console.log('Uploaded File Path:', filePath);
 
     const result = await cloudinary.uploader.upload(filePath, {
       resource_type: 'raw',
-      folder: 'documents'
+      folder: 'documents',
+      documentId: req.file.filename, 
+      originalName: req.file.originalname,
+      format: req.file.format,
+      size: req.file.size,
     });
 
     // respond with success and  file details
     return res.status(StatusCodes.OK).json({
       success: true,
       message: 'Tax document uploaded successfully!',
-      data: {
-        // Cloudinary URL
-        documentUrl: req.file.path,
-        // Public ID in Cloudinary
-        documentId: req.file.filename, 
-        originalName: req.file.originalname,
-        format: req.file.format,
-        size: req.file.size,
-        resourceType: req.file.resource_type
-      }
+      data: result,
     });
   } catch (error) {
     console.log('Error uploading document: ', error);
@@ -58,9 +47,3 @@ const uploadDocument = async (req , res) => {
 }
 
 module.exports = {uploadDocument};
- // const result = await cloudinary.uploader.upload(req.file.path, {
-    //   resource_type: 'raw',
-    //   // cloudinary folder name  
-    //   folder: 'documents' 
-    //   // specify resource type for documents
-    // });
