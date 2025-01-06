@@ -17,10 +17,6 @@ const uploadDocument = async (req , res) => {
       folder: 'documents',
     });
 
-    console.log('Headers:', req.headers);
-    console.log('Body:', req.body);
-    console.log('File:', req.file);
-
     // respond with success and  file details
     return res.status(StatusCodes.OK).json({
       success: true,

@@ -35,6 +35,14 @@ const updateProfilePicture = async (req , res) => {
         success: false,
         message: 'User not found.'
       });
+    };
+
+    // Validate file upload
+    if (!req.file || !req.file.path) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        success: false,
+        message: 'Profile picture upload failed. File missing.',
+      });
     }
 
     // delete old profile picture  from cloudinary if it exists
@@ -44,8 +52,19 @@ const updateProfilePicture = async (req , res) => {
       await cloudinary.uploader.destroy(publicId);
     };
 
+    // Update user's profile picture with new Cloudinary URL
+    user.profilePicture = req.file.path; // Cloudinary URL
+    await user.save();
+
+    // return success response
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: 'Pfp uploaded successfully.',
+      profilePicture: user.profilePicture,
+    })
+
     // upload new profilepicture
-    const result = await cloudinary.uploader.u
+    const result = await cloudinary.uploader.upload()
 
     // // get current user id from auth middleware
     // const userId = req.user.id;
@@ -60,7 +79,11 @@ const updateProfilePicture = async (req , res) => {
     // // update user profile in database with image s
   } 
   catch (error) {
-
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: 'Error uploading profile picture...',
+      error: error.message,
+    })
   }
 }
 
