@@ -12,38 +12,36 @@ const uploadDocument = async (req , res) => {
       })
     }
 
-    console.log(process.env.CLOUDINARY_CLOUD_NAME);
-    console.log(process.env.CLOUDINARY_API_KEY);
-    console.log(process.env.CLOUDINARY_API_SECRET);
-
-    // upload document to cloudinary 
-    const filePath = req.file.path;
-    console.log('Uploaded File Path:', filePath);
-
-    const result = await cloudinary.uploader.upload(filePath, {
+    const result = await cloudinary.uploader.upload(req.file.path, {
       resource_type: 'raw',
       folder: 'documents',
-      documentId: req.file.filename, 
-      originalName: req.file.originalname,
-      format: req.file.format,
-      size: req.file.size,
     });
+
+    console.log('Headers:', req.headers);
+    console.log('Body:', req.body);
+    console.log('File:', req.file);
 
     // respond with success and  file details
     return res.status(StatusCodes.OK).json({
       success: true,
       message: 'Tax document uploaded successfully!',
-      data: result,
+      data:  {
+        documentUrl: result.secure_url,
+        documentId: result.public_id,
+        originalName: req.file.originalname,
+        format: result.format,
+        size: result.bytes
+      },
     });
   } catch (error) {
     console.log('Error uploading document: ', error);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: 'Document upload failed.',
-      error: error.message
+      error: error.message | 'Missing file or invalid file field name. Make sure to upload using "file" as the key.'
     })
     
   }
-}
+} 
 
 module.exports = {uploadDocument};
