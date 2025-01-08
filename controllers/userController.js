@@ -91,18 +91,7 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-module.exports = { getAllUsers };
-
-
-    // upload new profilepicture
-    const result = await cloudinary.uploader.upload()
-
-    // // get current user id from auth middleware
-    // const userId = req.user.id;
-
-    // // upload to cloudinary
-    // const result  = await cloudinary.uploader.upload(req.file.path, {
-    //   folder: 'profile-pictures',
-    //   crop: 'fill',
-    //   gravity: 'face'
-    // });
+module.exports = { 
+  getAllUsers, 
+  updateProfilePicture 
+};

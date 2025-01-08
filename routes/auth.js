@@ -12,17 +12,20 @@ const  {
   logoutUser,
   deleteUser
 } = require('../controllers/auth');
+const { updateProfilePicture} = require('../controllers/userController')
 const authMiddleware = require('../middleware/authentication');
 
 const router = express.Router();
 
+// broooo, finalize and verify get-user-category-list and uploadpfp.
 router.get('/' , getAllUsers);
 router.post('/register' , register);
 router.post('/login' , login);
 router.get('/getUserProfile' , getUserProfile);
+router.put('/update-profile-picture', authMiddleware,updateProfilePicture)
 router.post('/select-category', selectCategory);
 router.patch('/upgrade-category', upgradeCategory);
-router.put('/get-user-category-list', getUserCategoryList)
+router.get('/get-user-category-list', getUserCategoryList)
 router.delete('/delete-user', authMiddleware, deleteUser);
 router.post('/logout' , logoutUser)
 
