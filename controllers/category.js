@@ -113,7 +113,33 @@ const upgradeCategory =  async (req , res) => {
   }
 }
 
+const getUserCategoryList = async (req , res) => {
+  try {
+    // fetch users and select only name and id;
+    const users = await User.find({}, 'name _id');
+
+    // prepare the category list 
+    const categoryList = users.map(user => ({
+      id: user._id,
+      name: user.name,
+    }));
+    
+    // send response
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      category_list: categoryList
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: 'Failed to fetch user-category list.',
+      error: error.message,
+    })
+  }
+}
+
 module.exports = {
   selectCategory,
-  upgradeCategory
+  upgradeCategory,
+  getUserCategoryList
 };
