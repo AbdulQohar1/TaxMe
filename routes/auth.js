@@ -1,7 +1,8 @@
 const express = require('express');
 const { 
   selectCategory,
-  upgradeCategory
+  upgradeCategory,
+  getUserCategoryList
 } = require('../controllers/category');
 const  { 
   register, 
@@ -21,6 +22,7 @@ router.post('/login' , login);
 router.get('/getUserProfile' , getUserProfile);
 router.post('/select-category', selectCategory);
 router.patch('/upgrade-category', upgradeCategory);
+router.put('/get-user-category-list', getUserCategoryList)
 router.delete('/delete-user', authMiddleware, deleteUser);
 router.post('/logout' , logoutUser)
 
