@@ -11,8 +11,9 @@ const taxDocumentSchema = new mongoose.Schema(
       type: String,
       default: "0MB",
     },
-    
-    timestamps: true,
+  },
+  {
+    timestamps: true
   }
 )
 

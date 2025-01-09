@@ -1,7 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 const cloudinary = require('cloudinary').v2;
-const auth = require('../middleware/authentication');
-const upload = require('../utilis/cloudinaryConfig');
+// const auth = require('../middleware/authentication');
+// const upload = require('../utilis/cloudinaryConfig');
 const User = require('../models/user'); 
 
 const updateProfilePicture = async (req , res) => {

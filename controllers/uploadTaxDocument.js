@@ -1,5 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 const cloudinary = require('../utilis/cloudinaryConfig');
+const User = require('../models/user');
+const TaxDocument = require('../models/taxDocument');
 
 // Set up Cloudinary storage
 const uploadDocument = async (req , res) => {
@@ -38,6 +40,69 @@ const uploadDocument = async (req , res) => {
     })
     
   }
-} 
+};
+
+const getDocument = async ( req, res) =>{
+  try {
+    // get user credentials as headers
+    const { useremail, usertoken } = req.headers;
+
+    // validate headers
+    if (!useremail, usertoken) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        success: false,
+        message: 'Please provide valid credential in headers.'
+      });
+    }
+
+    // verify token
+    const decoded = jwt.verify(usertoken, process.env.JWT_SECRET);
+
+    // check if email matches the provided token
+    if (useremail !== decoded.email) {
+      return  res.status(StatusCodes.UNAUTHORIZED).json({
+        success: false,
+        message: 'Invalid credentials; email and token mismatch.'
+      });
+    }
+
+    // find user in db
+    const user = await User.findOne({ email: useremail});
+    
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        success: false,
+        message: 'User not found.',
+      });
+    }
+
+    // fetch tax document for the user
+    const taxDocument = await TaxDocument.findOne({ userId: user._id});
+
+    if(!taxDocument) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        success: false,
+        message: 'Tax document not found.',
+      });
+    }
+
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      document_name: taxDocument.name,
+      document_size: taxDocument.size,
+      document_type: taxDocument.type,
+      date_modified: taxDocument.updatedAt,
+      
+    })
+
+
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "Error getting tax document",
+      error: error.message,
+    })
+  }
+}
 
 module.exports = {uploadDocument};
