@@ -116,12 +116,13 @@ const upgradeCategory =  async (req , res) => {
 const getUserCategoryList = async (req , res) => {
   try {
     // fetch users and select only name and id;
-    const users = await User.find({}, 'name _id');
+    const users = await User.find({}, '_id fullname category');
 
     // prepare the category list 
     const categoryList = users.map(user => ({
       id: user._id,
-      name: user.name,
+      name: user.fullname,
+      category: user.category
     }));
     
     // send response
