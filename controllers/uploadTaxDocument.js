@@ -92,8 +92,10 @@ const getDocument = async ( req, res) =>{
       document_size: taxDocument.size,
       document_type: taxDocument.type,
       date_modified: taxDocument.updatedAt,
-      
+
     })
+
+    // {documents: [{id,document_name,document_size,document_type,date_modified,base64}]}
 
 
   } catch (error) {
