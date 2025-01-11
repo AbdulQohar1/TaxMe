@@ -70,8 +70,7 @@ const updateProfilePicture = async (req , res) => {
       success: true,
       message: 'Pfp uploaded successfully.',
       profilePicture: user.profilePicture,
-    })
-
+    });
   } 
   catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -80,7 +79,7 @@ const updateProfilePicture = async (req , res) => {
       error: error.message,
     })
   }
-}
+};
 
 const getAllUsers = async (req, res) => {
   try {
@@ -94,5 +93,5 @@ const getAllUsers = async (req, res) => {
 
 module.exports = { 
   getAllUsers, 
-  updateProfilePicture 
+  updateProfilePicture, 
 };

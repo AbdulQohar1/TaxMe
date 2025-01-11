@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const { StatusCodes } = require('http-status-codes');
 const cloudinary = require('../utilis/cloudinaryConfig');
 const User = require('../models/user');
@@ -45,10 +46,10 @@ const uploadDocument = async (req , res) => {
 const getDocument = async ( req, res) =>{
   try {
     // get user credentials as headers
-    const { useremail, usertoken } = req.headers;
+    const { email, token } = req.headers;
 
     // validate headers
-    if (!useremail, usertoken) {
+    if (!email, token) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
         message: 'Please provide valid credential in headers.'
@@ -56,10 +57,10 @@ const getDocument = async ( req, res) =>{
     }
 
     // verify token
-    const decoded = jwt.verify(usertoken, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // check if email matches the provided token
-    if (useremail !== decoded.email) {
+    if (email !== decoded.email) {
       return  res.status(StatusCodes.UNAUTHORIZED).json({
         success: false,
         message: 'Invalid credentials; email and token mismatch.'
@@ -67,7 +68,7 @@ const getDocument = async ( req, res) =>{
     }
 
     // find user in db
-    const user = await User.findOne({ email: useremail});
+    const user = await User.findOne({ email: email});
     
     if (!user) {
       return res.status(StatusCodes.NOT_FOUND).json({
@@ -100,7 +101,7 @@ const getDocument = async ( req, res) =>{
       error: error.message,
     })
   }
-}
+};
 
 module.exports = {
   uploadDocument,

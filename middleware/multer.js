@@ -2,7 +2,6 @@ const multer = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('../utilis/cloudinaryConfig');
 
-// const storage = multer.memoryStorage();
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
@@ -32,5 +31,5 @@ const uploadMiddleware = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, 
 });
 
-module.exports = uploadMiddleware
+module.exports = uploadMiddleware;
 

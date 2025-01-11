@@ -57,7 +57,7 @@ const forgotPassword = async (req , res) => {
       error: error.message,
     });
   }
-}
+};
 
 const resetPassword = async (req, res) => {
   try {
@@ -124,7 +124,7 @@ const resetPassword = async (req, res) => {
       message: 'Failed to reset password. Please try again later.'
     });
   }
-}
+};
 
 module.exports = {
   forgotPassword,

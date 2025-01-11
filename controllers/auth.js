@@ -66,7 +66,7 @@ const register = async (req , res) => {
 			error: error.message || 'Internal Server Error',
 		});
 	}
-}
+};
 
 // user login handler
 const login = async (req , res) => {
@@ -95,7 +95,7 @@ const login = async (req , res) => {
 		user: {email: user.email},
 		token
 	});
-}
+};
 
 // get User profile handler
 const getUserProfile = async (req, res, next) => {
@@ -196,7 +196,7 @@ const logoutUser =  async ( req, res) => {
 			message: 'Failed to logout user',
 		})
 	};
-}
+};
 
 const deleteUser = async (req, res) => {
 	try {
@@ -235,7 +235,7 @@ const deleteUser = async (req, res) => {
 			message: 'Failed to delete user.'
 		})		
 	}
-}
+};
 
 module.exports = {
 	register, 

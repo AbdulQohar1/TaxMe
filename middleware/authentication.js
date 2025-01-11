@@ -11,7 +11,7 @@ const auth = async (req, res, next) => {
   }
 
   const token = authHeader.split(' ')[1];
-  
+
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
     // console.log('Decoded payload:', payload);
@@ -24,7 +24,7 @@ const auth = async (req, res, next) => {
   } catch (error) {
     throw new UnauthenticatedError('Authentication invalid.')
   };
-}
+};
 
 // const auth = async (req, res, next) => {
 //   const token = req.headers.token;

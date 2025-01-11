@@ -23,6 +23,6 @@ const taxDocumentSchema = new mongoose.Schema(
   {
     timestamps: true
   }
-)
+);
 
-module.exports = mongoose.model('taxDocument' , taxDocumentSchema)
+module.exports = mongoose.model('taxDocument' , taxDocumentSchema);
