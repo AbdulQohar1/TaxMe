@@ -88,11 +88,10 @@ const getDocument = async ( req, res) =>{
 
     return res.status(StatusCodes.OK).json({
       success: true,
-      document_name: taxDocument.name,
-      document_size: taxDocument.size,
-      document_type: taxDocument.type,
+      title: taxDocument.title,
+      document_size: taxDocument.document_size,
+      document_type: taxDocument.document_type,
       date_modified: taxDocument.updatedAt,
-
     });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -103,4 +102,7 @@ const getDocument = async ( req, res) =>{
   }
 }
 
-module.exports = {uploadDocument};
+module.exports = {
+  uploadDocument,
+  getDocument,
+};

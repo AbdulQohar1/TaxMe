@@ -7,10 +7,18 @@ const taxDocumentSchema = new mongoose.Schema(
       required: true,
       trim: true
     },
-    file_size: {
+    document_size: {
       type: String,
       default: "0MB",
     },
+    document_type: {
+      type: String,
+      enum: ['pdf', 'doc', 'docx', 'txt']
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now
+    }
   },
   {
     timestamps: true
