@@ -81,7 +81,9 @@ UserSchema.pre('save' , async function encryptedPassword (next) {
 UserSchema.methods.createToken = function () {
   return jwt.sign({ 
     userId: this._id,
-    fullname: this.fullname}, 
+    fullname: this.fullname,
+    email: this.email,
+  }, 
     process.env.JWT_SECRET,
     {
       expiresIn: process.env.JWT_LIFETIME

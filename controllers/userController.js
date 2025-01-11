@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const { StatusCodes } = require('http-status-codes');
 const cloudinary = require('cloudinary').v2;
 const User = require('../models/user'); 
@@ -6,6 +7,7 @@ const updateProfilePicture = async (req , res) => {
   try {
     // extract user credentials from headers
     const {email, authorization } = req.headers;
+
     const token = authorization.split(' ')[1];
 
     // validate require headers
@@ -17,16 +19,7 @@ const updateProfilePicture = async (req , res) => {
     };
 
     // verify the provided token
-    // let decoded = jwt.verify(token, process.env.JWT_SECRET);
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (err) {
-      return res.status(StatusCodes.UNAUTHORIZED).json({
-        success: false,
-        message: 'Invalid or expired token.',
-      });
-    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // check if email matches token
     if (email != decoded.email) {
