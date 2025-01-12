@@ -30,18 +30,21 @@ shared header - {'Content-Type': 'application/json'}
 /get-documents - headers: {useremail, usertoken}. returns {documents: [{id,document_name,document_size,document_type,date_modified,base64}]} // GET
 
 
-/get-services - return {services: [{title, service_id}]};
-/request-service - headers: {useremail, usertoken}, body: {service_id, category, user_id};
+/get-services - return {services: [{title, service_id}]}
+
+/request-service - headers: {useremail, usertoken},   body: {service_id, category, user_id}
 
 /get-receipts - headers: {useremail, usertoken}. returns {receipts: [{title, owner_info: {fullname, user_id}, receipt_date}]}
 
 /get-transactions - headers: {useremail, usertoken}. returns {transactions: []} // this is still to be reformed tho..
 
-/get-requests - headers: {useremail, usertoken}. returns {requests: [{}]}
+/get-requests - headers: {useremail, usertoken}. returns {requests: [{}]};
 
 // Send the token to your server for further processing
 /add-card - headers: {useremail, usertoken}, body: {token: token.id, default: "yes"}
+
 /get-card -  headers: {useremail, usertoken}. returns {card_id,name, last4Digit, brand, exp_month, exp_year}
+
 /remove-card - headers: {useremail, usertoken}, method: "delete", data: {card_id} 
 
 
