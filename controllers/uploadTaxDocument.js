@@ -46,10 +46,23 @@ const uploadDocument = async (req , res) => {
 const getDocument = async ( req, res) =>{
   try {
     // get user credentials as headers
-    const { email, token } = req.headers;
+    const {email, authorization } = req.headers;
+    console.log('Received request for email:', email);
+
+    // Check if both email and authorization header exist
+    if (!email || !authorization) {
+      console.log('Missing headers:', { email: !!email, authorization: !!authorization });
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        success: false,
+        message: 'Please provide email and authorization in headers.'
+      });
+    };
+    
+    const token = authorization.split(' ')[1];
+    // const { email, token } = req.headers;
 
     // validate headers
-    if (!email, token) {
+    if (!email || !token) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
         message: 'Please provide valid credential in headers.'
@@ -58,6 +71,7 @@ const getDocument = async ( req, res) =>{
 
     // verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log('Token decoded for email:', decoded.email);
 
     // check if email matches the provided token
     if (email !== decoded.email) {
@@ -69,6 +83,7 @@ const getDocument = async ( req, res) =>{
 
     // find user in db
     const user = await User.findOne({ email: email});
+    console.log('User found:', !!user, user ? `ID: ${user._id}` : 'No user');
     
     if (!user) {
       return res.status(StatusCodes.NOT_FOUND).json({
@@ -77,8 +92,14 @@ const getDocument = async ( req, res) =>{
       });
     }
 
+    const allDocs = await TaxDocument.find({}).lean();
+    console.log('All documents in collection:', allDocs);
+
     // fetch tax document for the user
     const taxDocument = await TaxDocument.findOne({ userId: user._id});
+    console.log('Tax document found:', !!taxDocument, 
+      taxDocument ? `ID: ${taxDocument._id}` : 'No document'
+    );
 
     if(!taxDocument) {
       return res.status(StatusCodes.NOT_FOUND).json({
@@ -89,10 +110,13 @@ const getDocument = async ( req, res) =>{
 
     return res.status(StatusCodes.OK).json({
       success: true,
-      title: taxDocument.title,
-      document_size: taxDocument.document_size,
-      document_type: taxDocument.document_type,
-      date_modified: taxDocument.updatedAt,
+      document: [{
+        id: taxDocument._id,
+        title: taxDocument.title,
+        document_size: taxDocument.document_size,
+        document_type: taxDocument.document_type,
+        date_modified: taxDocument.updatedAt,
+      }]
     });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
