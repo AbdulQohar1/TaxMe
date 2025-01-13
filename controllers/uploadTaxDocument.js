@@ -135,7 +135,10 @@ const getDocument = async ( req, res) =>{
         title: taxDocument.title,
         document_size: taxDocument.document_size,
         document_type: taxDocument.document_type,
+        // document_URL: taxDocument.,
+        document_URL: taxDocument.documentUrl,
         date_modified: taxDocument.updatedAt,
+        // add the document url
       }]
     });
   } catch (error) {

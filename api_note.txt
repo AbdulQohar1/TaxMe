@@ -29,10 +29,9 @@ shared header - {'Content-Type': 'application/json'}
 
 /get-documents - headers: {useremail, usertoken}. returns {documents: [{id,document_name,document_size,document_type,date_modified,base64}]} // GET
 
-
 /get-services - return {services: [{title, service_id}]}
 
-/request-service - headers: {useremail, usertoken},   body: {service_id, category, user_id}
+/request-service - headers: {useremail, usertoken},   body: {service_id, category, user_id};
 
 /get-receipts - headers: {useremail, usertoken}. returns {receipts: [{title, owner_info: {fullname, user_id}, receipt_date}]}
 
@@ -48,3 +47,59 @@ shared header - {'Content-Type': 'application/json'}
 /remove-card - headers: {useremail, usertoken}, method: "delete", data: {card_id} 
 
 
+"categories": [
+    {
+      "name": "Individuals",
+      "category_id": "1",
+      "id": "65e8"
+    },
+    {
+      "name": "Partnership",
+      "category_id": "2",
+      "id": "b66d"
+    },
+    {
+      "name": "Corporation",
+      "category_id": "3",
+      "id": "e7b5"
+    },
+    {
+      "name": "Sole Proprietorship",
+      "category_id": "4",
+      "id": "3ebb"
+    },
+    {
+      "name": "Others",
+      "category_id": "5",
+      "id": "21d3"
+    }
+  ],
+
+"services": [
+    {
+      "title": "Accounting services",
+      "service_id": "1",
+      "id": "8b59"
+    },
+    {
+      "title": "Attestation services",
+      "service_id": "2",
+      "id": "c19d"
+    },
+    {
+      "title": "Management consulting",
+      "service_id": "3",
+      "id": "421d"
+    },
+    {
+      "title": "Tax services",
+      "service_id": "3",
+      "id": "25d8"
+    },
+    {
+      "title": "Payment services",
+      "service_id": "4",
+      "id": "5b91"
+    },
+    {
+      "title

@@ -139,6 +139,94 @@ const getUserCategoryList = async (req , res) => {
   }
 }
 
+const selectCategoryy = async ( req, res) => {
+  try { 
+    const { email, category} = req.body;
+
+    // available categories
+    const availableCategories = [
+      {
+        name: "Individuals",
+        category_id: "1",
+        id: "65e8"
+      },
+      {
+        name: "Partnership",
+        category_id: "2",
+        id: "b66d"
+      },
+      {
+        name: "Corporation",
+        category_id: "3",
+        id: "e7b5"
+      },
+      {
+        name: "Sole Proprietorship",
+        category_id: "4",
+        id: "3ebb"
+      },
+      {
+        name: "Others",
+        category_id: "5",
+        id: "21d3"
+      }
+    ];
+
+    // validate category
+    const selectedCategory = availableCategories.find(
+      cat => cat.category === category 
+    );
+
+    if(!selectedCategory) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        success: false,
+        message: 'invalid category selected',
+        category: availableCategories //this returns available categories for reference
+      });
+    }
+
+    // find user and update user's category
+    const user = await User.findOneAndUpdate(
+      { email },
+      {
+        category: selectedCategory.name,
+        category_id: selectedCategory.category_id,
+        category_reference_id: selectedCategory.id
+      },
+      {
+        new: true
+      }
+    );
+
+    // verify user exists
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: 'Category updated successfully.',
+      data: {
+        user,
+        selected_category: selectedCategory
+      }
+    });
+  } catch (error) {
+    console.error('Error setting category:', error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: 'Failed to set user category.',
+      error: error.message
+    });
+  }
+}
+
+
+
+
 module.exports = {
   selectCategory,
   upgradeCategory,
