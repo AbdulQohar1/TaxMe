@@ -52,8 +52,14 @@ const UserSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['basic' , 'gold'  , 'premium'],
-    default: 'basic',
+    enum: [
+      'Individual' , 
+      'Partnership'  , 
+      'Corporation',
+      'Sole Proprietorship',
+      'Others',
+    ],
+    default: 'Individual',
   },
   active: {
     type: Boolean,

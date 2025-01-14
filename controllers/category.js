@@ -1,55 +1,136 @@
 const { StatusCodes } = require('http-status-codes');
 const User = require('../models/user');
 
-const selectCategory = async (req , res) => {
-  try {
-    const { email, category } = req.body;
+// available categories
+const availableCategories = [
+  {
+    name: "Individual",
+    category_id: "1",
+    id: "65e8"
+  },
+  {
+    name: "Partnership",
+    category_id: "2",
+    id: "b66d"
+  },
+  {
+    name: "Corporation",
+    category_id: "3",
+    id: "e7b5"
+  },
+  {
+    name: "Sole Proprietorship",
+    category_id: "4",
+    id: "3ebb"
+  },
+  {
+    name: "Others",
+    category_id: "5",
+    id: "21d3"
+  }
+];
+// const selectCategory = async (req , res) => {
+//   try {
+//     const { email, category } = req.body;
 
-    // validate category 
-    if (!['basic', 'gold', 'premium'].includes(category)) {
+//     // validate category 
+//     if (!['basic', 'gold', 'premium'].includes(category)) {
+//       return res.status(StatusCodes.BAD_REQUEST).json({
+//         success: false,
+//         message: 'Invalid category selected.'
+//       });
+//     }
+
+//     // update user's category
+//     const user = await User.findByIdAndUpdate(
+//       { email },
+//       { category },
+//       { new: true }
+//     );
+
+//     // verify user 
+//     if (!user) {
+//       return res.status(StatusCodes.BAD_GATEWAY).json({
+//         success: false,
+//         message: 'User not found',
+//       });
+//     }
+
+//     res.status(StatusCodes.OK).json({
+//       success: true,
+//       message: 'Category updated successfully.',
+//       data: user
+//     })
+
+//   }
+//   catch (error) {
+//     console.error('Error setting category:', error);
+//     res.status(500).json({
+//       success: false,
+//       message: 'Failed to set user category...',
+//     });
+//   }
+// }
+const selectCategory = async ( req, res) => {
+  try { 
+    const { email, category} = req.body;
+
+    // validate category
+    const selectedCategory = availableCategories.find(
+      cat => cat.category === category 
+    );
+
+    if(!selectedCategory) {
+      const categoryNames = availableCategories.map(cat => ({ name: cat.name }));
+
       return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
-        message: 'Invalid category selected.'
+        message: 'invalid category selected',
+        category: categoryNames //this returns available category names for easy reference
       });
     }
 
-    // update user's category
-    const user = await User.findByIdAndUpdate(
+    // find user and update user's category
+    const user = await User.findOneAndUpdate(
       { email },
-      { category },
-      { new: true }
+      {
+        category: selectedCategory.name,
+        category_id: selectedCategory.category_id,
+        category_reference_id: selectedCategory.id
+      },
+      {
+        new: true
+      }
     );
 
-    // verify user 
+    // verify user exists
     if (!user) {
-      return res.status(StatusCodes.BAD_GATEWAY).json({
+      return res.status(StatusCodes.NOT_FOUND).json({
         success: false,
         message: 'User not found',
       });
     }
 
-    res.status(StatusCodes.OK).json({
+    return res.status(StatusCodes.OK).json({
       success: true,
       message: 'Category updated successfully.',
-      data: user
-    })
-
-  }
-  catch (error) {
+      data: {
+        user,
+        selected_category: selectedCategory.name
+      }
+    });
+  } catch (error) {
     console.error('Error setting category:', error);
-    res.status(500).json({
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: 'Failed to set user category...',
+      message: 'Failed to set user category.',
+      error: error.message
     });
   }
 }
 
 const upgradeCategory =  async (req , res) => {
-  try {
-    // Log incoming request hader & body
-    console.log('Headers:', req.headers);
-    console.log('Request Body:', req.body);
-  
+  try {  
     // email from headers
     const { useremail } = req.headers; 
     // new category from body
@@ -139,90 +220,6 @@ const getUserCategoryList = async (req , res) => {
   }
 }
 
-const selectCategoryy = async ( req, res) => {
-  try { 
-    const { email, category} = req.body;
-
-    // available categories
-    const availableCategories = [
-      {
-        name: "Individuals",
-        category_id: "1",
-        id: "65e8"
-      },
-      {
-        name: "Partnership",
-        category_id: "2",
-        id: "b66d"
-      },
-      {
-        name: "Corporation",
-        category_id: "3",
-        id: "e7b5"
-      },
-      {
-        name: "Sole Proprietorship",
-        category_id: "4",
-        id: "3ebb"
-      },
-      {
-        name: "Others",
-        category_id: "5",
-        id: "21d3"
-      }
-    ];
-
-    // validate category
-    const selectedCategory = availableCategories.find(
-      cat => cat.category === category 
-    );
-
-    if(!selectedCategory) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        success: false,
-        message: 'invalid category selected',
-        category: availableCategories //this returns available categories for reference
-      });
-    }
-
-    // find user and update user's category
-    const user = await User.findOneAndUpdate(
-      { email },
-      {
-        category: selectedCategory.name,
-        category_id: selectedCategory.category_id,
-        category_reference_id: selectedCategory.id
-      },
-      {
-        new: true
-      }
-    );
-
-    // verify user exists
-    if (!user) {
-      return res.status(StatusCodes.NOT_FOUND).json({
-        success: false,
-        message: 'User not found',
-      });
-    }
-
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      message: 'Category updated successfully.',
-      data: {
-        user,
-        selected_category: selectedCategory
-      }
-    });
-  } catch (error) {
-    console.error('Error setting category:', error);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: 'Failed to set user category.',
-      error: error.message
-    });
-  }
-}
 
 
 
