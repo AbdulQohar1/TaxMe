@@ -90,29 +90,27 @@ const selectCategory = async ( req, res) => {
 
 const upgradeCategory =  async (req , res) => {
   try {  
-    // email from headers
-    const { useremail } = req.headers; 
-    // new category from body
-    const { category } = req.body;
-
-    // verify if header is provided 
-    if (!useremail) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        success: false,
-        message: 'User email is required in headers.',
-      });
-    }
+    const { email , category } = req.body;
     
-    // validate category
-    if (!['basic', 'gold', 'premium'].includes(category)) {
+    // validate category exist in availableCategories option
+    const selectedCategory = availableCategories.find(
+      cat => cat.name === category
+    );
+
+    if ( !selectedCategory ) {
+      const categoryNames = availableCategories.map(
+        cat => ({ name: cat.name })
+      )
+
       return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
         message: 'Invalid category selected',
+        category: categoryNames, // Returns available categories for reference
       });
     }
 
     // find user 
-    const user = await User.findOne({ email: useremail });
+    const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(StatusCodes.NOT_FOUND).json({
@@ -122,26 +120,26 @@ const upgradeCategory =  async (req , res) => {
     }
 
     // check if user is already in the selected category
-    if (user.category === category) {
+    if (user.category === selectedCategory.name) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
-        message: `You're already in the ${category} category`,
+        message: `You're already in the ${selectedCategory.name} category`,
       });
     }
 
-    // Log current category before update
-    console.log('Current Category:', user.category);
-
-    // update user's category
-    user.category = category;
+    // update user's category and it's related fields
+    user.category = selectedCategory.name,
+    user.category_id = selectedCategory.category_id,
+    user.category_reference_id = selectedCategory.id
     await user.save();
-
-    console.log('Category Updated To:', user.category);
 
     res.status(StatusCodes.OK).json({
       success: true,
       message: 'Category upgraded successfully.',
-      data: user,
+      data: {
+        user,
+        selected_category: selectedCategory.name,
+      },
     });
   }
   catch (error ){
