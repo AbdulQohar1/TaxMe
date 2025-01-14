@@ -29,55 +29,14 @@ const availableCategories = [
     id: "21d3"
   }
 ];
-// const selectCategory = async (req , res) => {
-//   try {
-//     const { email, category } = req.body;
 
-//     // validate category 
-//     if (!['basic', 'gold', 'premium'].includes(category)) {
-//       return res.status(StatusCodes.BAD_REQUEST).json({
-//         success: false,
-//         message: 'Invalid category selected.'
-//       });
-//     }
-
-//     // update user's category
-//     const user = await User.findByIdAndUpdate(
-//       { email },
-//       { category },
-//       { new: true }
-//     );
-
-//     // verify user 
-//     if (!user) {
-//       return res.status(StatusCodes.BAD_GATEWAY).json({
-//         success: false,
-//         message: 'User not found',
-//       });
-//     }
-
-//     res.status(StatusCodes.OK).json({
-//       success: true,
-//       message: 'Category updated successfully.',
-//       data: user
-//     })
-
-//   }
-//   catch (error) {
-//     console.error('Error setting category:', error);
-//     res.status(500).json({
-//       success: false,
-//       message: 'Failed to set user category...',
-//     });
-//   }
-// }
 const selectCategory = async ( req, res) => {
   try { 
     const { email, category} = req.body;
-
-    // validate category
+    
+    // Case-insensitive category validation
     const selectedCategory = availableCategories.find(
-      cat => cat.category === category 
+      cat => cat.name.toLowerCase() === category.toLowerCase()
     );
 
     if(!selectedCategory) {
@@ -99,7 +58,7 @@ const selectCategory = async ( req, res) => {
         category_reference_id: selectedCategory.id
       },
       {
-        new: true
+        new: true,
       }
     );
 
@@ -153,7 +112,7 @@ const upgradeCategory =  async (req , res) => {
     }
 
     // find user 
-    const user = await User.findOne({ email: useremail.toLowerCase() });
+    const user = await User.findOne({ email: useremail });
 
     if (!user) {
       return res.status(StatusCodes.NOT_FOUND).json({
