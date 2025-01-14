@@ -153,15 +153,31 @@ const upgradeCategory =  async (req , res) => {
 
 const getUserCategoryList = async (req , res) => {
   try {
-    // fetch users and select only name and id;
-    const users = await User.find({}, '_id fullname category');
+    // fetch users with their category information
+    const users = await User.find({}, '_id fullname category category_id ');
+
+    // map users to include their category informations
+    const categoryList = users.map( user => {
+      // find the matching category from availableCategories
+      const userCategory = availableCategories.find(
+        cat => cat.name === user.category
+      );
+
+      return {
+        id: user._id,
+        name: user.fullname,
+        category: userCategory ? userCategory.name: 'Uncategorized',
+        category_id: userCategory ? userCategory.category_id : null
+      }
+    })
 
     // prepare the category list 
-    const categoryList = users.map(user => ({
-      id: user._id,
-      name: user.fullname,
-      category: user.category
-    }));
+    // const categoryList = users.map(user => ({
+    //   id: user._id,
+    //   name: user.fullname,
+    //   category: selectedCategory.name,
+    //   // category: user.category
+    // }));
     
     // send response
     return res.status(StatusCodes.OK).json({
