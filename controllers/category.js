@@ -166,19 +166,13 @@ const getUserCategoryList = async (req , res) => {
       return {
         id: user._id,
         name: user.fullname,
-        category: userCategory ? userCategory.name: 'Uncategorized',
-        category_id: userCategory ? userCategory.category_id : null
+        // category: userCategory.name ,
+        category: userCategory ? userCategory.name: 'Individual',
+        // category_id: userCategory.category_id,
+        category_id: userCategory ? userCategory.category_id : '1'
       }
     })
 
-    // prepare the category list 
-    // const categoryList = users.map(user => ({
-    //   id: user._id,
-    //   name: user.fullname,
-    //   category: selectedCategory.name,
-    //   // category: user.category
-    // }));
-    
     // send response
     return res.status(StatusCodes.OK).json({
       success: true,
@@ -192,10 +186,6 @@ const getUserCategoryList = async (req , res) => {
     })
   }
 }
-
-
-
-
 
 module.exports = {
   selectCategory,
