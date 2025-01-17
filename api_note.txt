@@ -25,7 +25,9 @@ shared header - {'Content-Type': 'application/json'}
 
 /user-category-list - return {category_list: [{name, id}]} // GET
 
-/upload-document - headers: {useremail, usertoken}, body: {id,document_name,document_size,document_type,date_modified,base64} // POST
+/upload-document - headers: {useremail, usertoken}, body: {
+  id,document_name,document_size,document_type,date_modified,base64
+} // POST
 
 /get-documents - headers: {useremail, usertoken}. returns {documents: [{id,document_name,document_size,document_type,date_modified,base64}]} // GET
 

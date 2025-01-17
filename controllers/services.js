@@ -1,36 +1,36 @@
 const User = require('../models/user');
 const Service = require('../models/services');
 const { StatusCodes } = require('http-status-codes');
-const services = require('../models/services');
+const Service = require('../models/services');
 
 // offered services
-const services = [
-  {
-    "title": "Accounting services",
-    "service_id": "1",
-    "id": "8b59"
-  },
-  {
-    "title": "Attestation services",
-    "service_id": "2",
-    "id": "c19d"
-  },
-  {
-    "title": "Management consulting",
-    "service_id": "3",
-    "id": "421d"
-  },
-  {
-    "title": "Tax services",
-    "service_id": "3",
-    "id": "25d8"
-  },
-  {
-    "title": "Payment services",
-    "service_id": "4",
-    "id": "5b91"
-  },
-]
+// const services = [
+//   {
+//     "title": "Accounting services",
+//     "service_id": "1",
+//     "id": "8b59"
+//   },
+//   {
+//     "title": "Attestation services",
+//     "service_id": "2",
+//     "id": "c19d"
+//   },
+//   {
+//     "title": "Management consulting",
+//     "service_id": "3",
+//     "id": "421d"
+//   },
+//   {
+//     "title": "Tax services",
+//     "service_id": "3",
+//     "id": "25d8"
+//   },
+//   {
+//     "title": "Payment services",
+//     "service_id": "4",
+//     "id": "5b91"
+//   },
+// ]
 
 const requestService = async ( req , res) => {
  try {
@@ -65,23 +65,33 @@ const requestService = async ( req , res) => {
   }
 
   // find the service 
-  const service = await Service.findOne({ })
+  const service = await Service.findOne({ service_id });
+
+  if (!service) {
+    return res.status(StatusCodes.NOT_FOUND).json({
+      success: false,
+      message: 'No service found.'
+    });
+  }
 
   // if all validation pass, retur thee required data
   return res.status(StatusCodes.OK).json({
     success: true,
     message: 'Service requested successfully.',
     data: {
-      // service_id: user.ser
+      service_id: service.service_id,
+      category: user.category,
+      user_id: user._id,
+      user_name: user.fullname,
     }
   }) 
  } catch (error) {
-  
- }
- 
+  return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+    success: false,
+    message: 'Failed to process service request.'
+  });
+ } 
 }
-
-
 
 
 const getServices = async ( req , res) => {
@@ -102,5 +112,6 @@ const getServices = async ( req , res) => {
 };
 
 module.exports = {
-  getServices
+  getServices,
+  requestService
 }
