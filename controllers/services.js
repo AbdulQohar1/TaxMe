@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const Service = require('../models/services');
 const { StatusCodes } = require('http-status-codes');
@@ -31,67 +32,71 @@ const { StatusCodes } = require('http-status-codes');
 //   },
 // ]
 
-const requestService = async ( req , res) => {
- try {
-   // get user email & token from headers
-  const { email, token} = req.headers;
-
-  // validate if user credentials are provided in headers
-  if (! email || !token ) {
-    return res.status(StatusCodes.json({
-      success: false,
-      message: 'Failed to provide useremail and usertoken in  headers',
-    }));
-  }
-
-  // find user with the provided email
-  const user = await User.find({ email});
-
-  // check if user exists
-  if (!user){
-    return res.status(StatusCodes.NOT_FOUND).json({
-      success: false,
-      message: 'User not found'
-    });
-  }
- 
-  // validate token
-  if (user.token !== token ) {
-    return res.status(StatusCodes.UNAUTHORIZED).json({
-      success: false,
-      message: 'Invalid token',
-    });
-  }
-
-  // find the service 
-  const service = await Service.findOne({ service_id });
-
-  if (!service) {
-    return res.status(StatusCodes.NOT_FOUND).json({
-      success: false,
-      message: 'No service found.'
-    });
-  }
-
-  // if all validation pass, retur thee required data
-  return res.status(StatusCodes.OK).json({
-    success: true,
-    message: 'Service requested successfully.',
-    data: {
-      service_id: service.service_id,
-      category: user.category,
-      user_id: user._id,
-      user_name: user.fullname,
+const requestService = async (req, res) => {
+  try {
+    // get user email & token from headers
+    const { email, authorization} = req.headers;
+    
+    // validate if user credentials are provided in headers
+    const token = authorization.split(' ')[1];
+    if (!email || !token) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        success: false,
+        message: 'Failed to provide email and token in headers',
+      });
     }
-  }) 
- } catch (error) {
-  return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-    success: false,
-    message: 'Failed to process service request.'
-  });
- } 
-}
 
+    // find user with the provided email
+    const user = await User.findOne({ email });
+
+    // check if user exists
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // validate token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // check if email matches the provided token
+    if (email !== decoded.email) {
+      return  res.status(StatusCodes.UNAUTHORIZED).json({
+        success: false,
+        message: 'Invalid credentials; email and token mismatch.'
+      });
+    };
+
+    // find the service
+    const service = await Service.findOne({ isActive: true });
+
+    if (!service) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        success: false,
+        message: 'No service found.'
+      });
+    }
+
+    // if all validation pass, return the required data
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: 'Service requested successfully.',
+      data: {
+        service_id: service.service_id,
+        category: user.category,
+        user_id: user._id,
+        user_name: user.fullname,
+      }
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: 'Failed to process service request.'
+    });
+  }
+};
 
 const getServices = async ( req , res) => {
   try {
