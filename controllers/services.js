@@ -1,7 +1,6 @@
 const User = require('../models/user');
 const Service = require('../models/services');
 const { StatusCodes } = require('http-status-codes');
-const Service = require('../models/services');
 
 // offered services
 // const services = [

@@ -14,6 +14,7 @@ const forgotPasswordRouter  = require('./routes/passwordReset');
 const usersRouter = require('./routes/auth');
 const userCategoryRouter =  require('./routes/auth');
 const uploadDocumentRouter = require('./routes/uploadTaxDocument');
+const serviceRouter = require('./routes/services');
 
 // error handler
 const authMiddleware = require('./middleware/authentication');
@@ -29,6 +30,7 @@ app.use('/user', forgotPasswordRouter);
 app.use('/user', userCategoryRouter)
 app.use('/users', usersRouter);
 app.use('/user', uploadDocumentRouter);
+app.use('/services' , serviceRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
