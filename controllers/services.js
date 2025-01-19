@@ -30,7 +30,7 @@ const { StatusCodes } = require('http-status-codes');
 //     "service_id": "4",
 //     "id": "5b91"
 //   },
-// ]
+// ];
 
 const requestService = async (req, res) => {
   try {
