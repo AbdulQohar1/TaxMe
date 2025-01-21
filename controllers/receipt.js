@@ -1,8 +1,10 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const Receipt =require('../models/receipt');
 const { StatusCodes } = require('http-status-codes');
+const receipt = require('../models/receipt');
 
-const getReceipt = async (req, res) => {
+const getReceipts = async (req, res) => {
   try {
     // get user's email and token in headers
     const { email, authorization } = req. headers;
@@ -39,7 +41,30 @@ const getReceipt = async (req, res) => {
       });
     }
 
+    // get receipt for the user
+    const receipts = await s.findOne({ owner_id: user._id})
+      .populate('owner_id', 'fullname _id');
+
+    const formattedReceipt = receipts.map(receipt => ({
+      title: receipt.title,
+      owner_info: {
+        fullname: receipt.owner_id.fullname,
+        user_id: receipt.owner_id._id
+      },
+      receipt_date: receipt.receipt_date
+    }));
+
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: 'Receipt retrieved successfully.',
+      receipt: formattedReceipt
+      // data: 
+    })
+
   } catch (error) {
-    
+    return  res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: 'Failed to fetch receipts'
+    })
   }
 }
